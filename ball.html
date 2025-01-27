@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    :root {
+      --primary: #7269E3;
+      --background: #272C39;
+      --dark: #231934;
+      --accent: #246BFD;
+      --highlight: #F79193;
+    }
+
+    body {
+      background-color: var(--dark);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+     overflow: auto; /* or overflow-y: scroll; */
+    }
+
+    .navbar {
+      background-color: var(--background);
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .menu-btn div {
+      width: 25px;
+      height: 3px;
+      background-color: var(--primary);
+      margin: 4px 0;
+      transition: 0.3s;
+    }
+
+    .menu-btn:hover div {
+      background-color: var(--highlight);
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px var(--primary);
+    }
+
+    .search-bar {
+      flex-grow: 1;
+      max-width: 600px;
+      margin: 0 2rem;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border-radius: 20px;
+      border: 2px solid var(--primary);
+      background-color: var(--dark);
+      color: white;
+      font-size: 1rem;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 15px rgba(114, 105, 227, 0.3);
+    }
+
+    .nav-right {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .auth-btn {
+      padding: 0.8rem 1.5rem;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      transform: scale(1);
+    }
+
+    .login-btn {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .login-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(36, 107, 253, 0.4);
+    }
+
+    .account-section {
+      padding: 1rem;
+      background: linear-gradient(45deg, var(--primary), var(--accent));
+      color: white;
+      text-align: center;
+      margin-bottom: 1rem;
+      border-radius: 0 0 20px 20px;
+    }
+
+    .main-content {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-grow: 1;
+    }
+
+    .game-container {
+      background-color: var(--background);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-frame {
+      flex-grow: 1;
+      background-color: #344CB7;
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      max-width: 100%;
+      max-height: 100%;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+    }
+
+    .game-info {
+      padding: 1.5rem;
+      color: white;
+    }
+
+    .game-title {
+      font-size: 2rem;
+      color: var(--highlight);
+      margin-bottom: 1rem;
+    }
+
+    .game-stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1rem;
+      color: #888;
+    }
+
+    .game-modes {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    .mode-card {
+      background: linear-gradient(45deg, var(--primary), var(--accent));
+      padding: 1rem;
+      border-radius: 15px;
+      color: white;
+      cursor: pointer;
+      min-width: 150px;
+      text-align: center;
+    }
+
+    .mode-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .game-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-top: 2px solid var(--dark);
+    }
+
+    .control-btn {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 15px;
+      transition: 0.3s;
+    }
+
+    .control-btn:hover {
+      background-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    #score {
+      font-size: 24px;
+      color: white;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .side-menu {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 60px;
+      background-color: var(--background);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      gap: 1rem;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    .menu-item {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .menu-item:hover {
+      background-color: var(--primary);
+      transform: translateX(5px);
+    }
+
+    .menu-item::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 100%;
+      padding: 5px 10px;
+      background-color: var(--accent);
+      color: white;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+      white-space: nowrap;
+    }
+
+    .menu-item:hover::after {
+      opacity: 1;
+      transform: translateX(10px);
+    }
+
+    .loading-bar {
+      height: 3px;
+      background-color: var(--accent);
+      width: 0%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transition: width 0.3s;
+    }
+
+    @media (max-width: 768px) {
+      .side-menu {
+        width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-bar"></div>
+  
+  <nav class="navbar">
+    <div class="nav-left">
+      <button class="menu-btn" id="menuToggle">
+        <div></div>
+        <div></div>
+        <div></div>
+      </button>
+      <img src="logo.png" class="logo">
+      <h1 style="color: white;">EduFun Hub</h1>
+    </div>
+    <div class="search-bar">
+      <input type="text" placeholder="Search games...">
+    </div>
+    <div class="nav-right">
+      <button class="auth-btn login-btn">Log in</button>
+    </div>
+  </nav>
+
+  <div class="account-section">
+    <span>🎮 Create an account to save your high scores!</span>
+  </div>
+
+  <main class="main-content">
+    <div class="game-container">
+      <div id="score" class="score">Player 1: 0 | Player 2: 0</div>
+      <div class="game-frame">
+        <canvas id="pong" width="800" height="400"></canvas>
+      </div>
+      
+      <div class="game-info">
+        <h2 class="game-title">Pong Multiplayer</h2>
+        <div class="game-stats">
+          <span>👁️ 250K Views</span>
+          <span>⭐ 4.5/5 Rating</span>
+          <span>🎮 Classic Arcade</span>
+        </div>
+        <p style="color: #ccc;">Classic arcade-style Pong! Player 1 uses W/S, Player 2 uses Up/Down arrows.</p>
+      </div>
+
+      <div class="game-modes">
+        <div class="mode-card" onclick="setGameMode('easy')">
+          <h3>Easy Mode</h3>
+          <p>Slower Ball</p>
+        </div>
+        <div class="mode-card" onclick="setGameMode('medium')">
+          <h3>Medium Mode</h3>
+          <p>Normal Speed</p>
+        </div>
+        <div class="mode-card" onclick="setGameMode('hard')">
+          <h3>Hard Mode</h3>
+          <p>Fast Ball</p>
+        </div>
+      </div>
+      
+      <div class="game-controls">
+        <div class="control-left">
+          <button class="control-btn" id="likeBtn">
+            👍 100K
+          </button>
+          <button class="control-btn" id="dislikeBtn">
+            👎 8K
+          </button>
+          <button class="control-btn">
+            ❤️ Favorite
+          </button>
+        </div>
+        <div class="control-right">
+          <button class="control-btn" onclick="resetGame()">
+            🔄 Reset Game
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Get canvas and context
+    const canvas = document.getElementById("pong");
+    const ctx = canvas.getContext("2d");
+
+    // Ball object
+    const ball = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      radius: 10,
+      speedX: 5,
+      speedY: 5,
+      color: "#FFF",
+      move: function() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+      },
+      reset: function() {
+        this.x = canvas.width / 2;
+        this.y = canvas.height / 2;
+        this.speedX = 5 * (Math.random() > 0.5 ? 1 : -1);
+        this.speedY = 5 * (Math.random() > 0.5 ? 1 : -1);
+      }
+    };
+
+    // Paddle object
+    const paddleWidth = 10, paddleHeight = 100;
+    const paddleSpeed = 20;
+
+    const paddle1 = {
+      x: 0,
+      y: canvas.height / 2 - paddleHeight / 2,
+      width: paddleWidth,
+      height: paddleHeight,
+      color: "#FFF",
+      moveUp: false,
+      moveDown: false,
+      move: function() {
+        if (this.moveUp && this.y > 0) this.y -= paddleSpeed;
+        if (this.moveDown && this.y < canvas.height - this.height) this.y += paddleSpeed;
+      }
+    };
+
+    const paddle2 = {
+      x: canvas.width - paddleWidth,
+      y: canvas.height / 2 - paddleHeight / 2,
+      width: paddleWidth,
+      height: paddleHeight,
+      color: "#FFF",
+      moveUp: false,
+      moveDown: false,
+      move: function() {
+        if (this.moveUp && this.y > 0) this.y -= paddleSpeed;
+        if (this.moveDown && this.y < canvas.height - this.height) this.y += paddleSpeed;
+      }
+    };
+
+    // Score variables
+    let score1 = 0;
+    let score2 = 0;
+
+    // Current game mode
+    let currentGameMode = 'medium';
+
+    // Set game mode
+    function setGameMode(mode) {
+      currentGameMode = mode;
+      switch(mode) {
+        case 'easy':
+          ball.speedX = 3;
+          ball.speedY = 3;
+          break;
+        case 'medium':
+          ball.speedX = 5;
+          ball.speedY = 5;
+          break;
+        case 'hard':
+          ball.speedX = 7;
+          ball.speedY = 7;
+          break;
+      }
+      resetGame();
+    }
+
+    // Draw ball and paddles
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fillStyle = ball.color;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawPaddle(paddle) {
+        ctx.beginPath();
+        ctx.rect(paddle.x, paddle.y, paddle.width, paddle.height);
+        ctx.fillStyle = paddle.color;
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      // Draw score
+      function drawScore() {
+        document.getElementById("score").innerText = `Player 1: ${score1} | Player 2: ${score2}`;
+      }
+
+      // Ball and paddle collision
+      function collisionDetection() {
+        // Ball collision with top and bottom walls
+        if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+          ball.speedY = -ball.speedY;
+        }
+
+        // Ball collision with paddles
+        if (
+          (ball.x - ball.radius < paddle1.x + paddle1.width && 
+           ball.y > paddle1.y && ball.y < paddle1.y + paddle1.height) ||
+          (ball.x + ball.radius > paddle2.x && 
+           ball.y > paddle2.y && ball.y < paddle2.y + paddle2.height)
+        ) {
+          ball.speedX = -ball.speedX * 1.1; // Slight speed increase on paddle hit
+        }
+      }
+
+      // Reset game function
+      function resetGame() {
+        score1 = 0;
+        score2 = 0;
+        ball.reset();
+        paddle1.y = canvas.height / 2 - paddleHeight / 2;
+        paddle2.y = canvas.height / 2 - paddleHeight / 2;
+        drawScore();
+      }
+
+      // Update the game
+      function update() {
+        ball.move();
+        paddle1.move();
+        paddle2.move();
+        collisionDetection();
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawPaddle(paddle1);
+        drawPaddle(paddle2);
+        drawScore();
+
+        // Check if the ball passes a paddle
+        if (ball.x - ball.radius < 0) {
+          score2++;
+          ball.reset();
+        }
+        if (ball.x + ball.radius > canvas.width) {
+          score1++;
+          ball.reset();
+        }
+      }
+
+      // Key events for paddle movement
+      document.addEventListener("keydown", function(event) {
+        if (event.key === "ArrowUp") paddle2.moveUp = true;
+        if (event.key === "ArrowDown") paddle2.moveDown = true;
+        if (event.key === "w") paddle1.moveUp = true;
+        if (event.key === "s") paddle1.moveDown = true;
+      });
+
+      document.addEventListener("keyup", function(event) {
+        if (event.key === "ArrowUp") paddle2.moveUp = false;
+        if (event.key === "ArrowDown") paddle2.moveDown = false;
+        if (event.key === "w") paddle1.moveUp = false;
+        if (event.key === "s") paddle1.moveDown = false;
+      });
+
+      // Interface functionality
+      const menuBtn = document.querySelector('#menuToggle');
+      const sideMenu = document.querySelector('.side-menu');
+      
+      menuBtn.addEventListener('click', () => {
+        const currentWidth = sideMenu.style.width;
+        sideMenu.style.width = currentWidth === '200px' ? '60px' : '200px';
+        
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+          if (currentWidth !== '200px') {
+            item.textContent += ' ' + item.getAttribute('data-tooltip');
+          } else {
+            item.textContent = item.textContent.split(' ')[0];
+          }
+        });
+      });
+
+      // Like/Dislike system
+      document.querySelector('#likeBtn').addEventListener('click', function() {
+        let likes = 100000;
+        likes++;
+        this.innerHTML = `👍 ${Math.floor(likes/1000)}K`;
+      });
+
+      document.querySelector('#dislikeBtn').addEventListener('click', function() {
+        let dislikes = 8000;
+        dislikes++;
+        this.innerHTML = `👎 ${Math.floor(dislikes/1000)}K`;
+      });
+
+      // Loading bar animation
+      function updateLoadingBar() {
+        let progress = 0;
+        const loadingBar = document.querySelector('.loading-bar');
+        const interval = setInterval(() => {
+          progress += 2;
+          loadingBar.style.width = `${progress}%`;
+          if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              loadingBar.style.width = '0%';
+            }, 200);
+          }
+        }, 20);
+      }
+
+      // Game loop
+      function gameLoop() {
+        update();
+        requestAnimationFrame(gameLoop);
+      }
+
+      // Initialize game
+      updateLoadingBar();
+      gameLoop();
+    </script>
+</body>
+</html>

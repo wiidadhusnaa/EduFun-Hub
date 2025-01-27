@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Game Portal - Dice Rolling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        :root {
+            --primary: #7269E3;
+            --background: #272C39;
+            --dark: #231934;
+            --accent: #246BFD;
+            --highlight: #F79193;
+        }
+
+        body {
+            background-color: var(--dark);
+        }
+
+        .navbar {
+            background-color: var(--background);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-btn div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary);
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        .menu-btn:hover div {
+            background-color: var(--highlight);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            background-color: var(--dark);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(114, 105, 227, 0.3);
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .auth-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transform: scale(1);
+        }
+
+        .login-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(36, 107, 253, 0.4);
+        }
+
+        .account-section {
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background-color: var(--background);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+
+        .game-frame {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: #D9EAFD;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            color: var(--highlight);
+            margin-bottom: 1rem;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+
+        .game-modes {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .mode-card {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            padding: 1rem;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 2px solid var(--dark);
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .dice-board {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px auto;
+        }
+
+        .dice {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 64px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .dice.rolling {
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-15deg) scale(1.05); }
+            75% { transform: rotate(15deg) scale(1.05); }
+        }
+
+        .player-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .player {
+            flex: 1;
+            background-color: var(--dark);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+        }
+
+        .player.active {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+        }
+
+        #turn-message, #winner-message {
+            color: var(--highlight);
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .side-menu {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 60px;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .menu-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            padding: 5px 10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .menu-item:hover::after {
+            opacity: 1;
+            transform: translateX(10px);
+        }
+
+        .loading-bar {
+            height: 3px;
+            background-color: var(--accent);
+            width: 0%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: width 0.3s;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @media (max-width: 768px) {
+            .side-menu {
+                width: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuToggle">
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="logo.png" alt="Logo" class="logo">
+            <h1 style="color: white;">EduFun Hub</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search games...">
+        </div>
+        <div class="nav-right">
+            <button class="auth-btn login-btn">Log in</button>
+        </div>
+    </nav>
+
+    <div class="account-section">
+        <span>🎲 Create an account to track your game stats!</span>
+    </div>
+
+    <main class="main-content">
+        <div class="game-container">
+            <div class="game-frame">
+                <div class="player-section">
+                    <div id="player1" class="player active">
+                        <h2>Player 1</h2>
+                        <div>Score: <span id="player1-score">0</span></div>
+                    </div>
+                    <div id="player2" class="player">
+                        <h2>Player 2</h2>
+                        <div>Score: <span id="player2-score">0</span></div>
+                    </div>
+                </div>
+                <div class="dice-board">
+                    <div id="dice1" class="dice">-</div>
+                    <div id="dice2" class="dice">-</div>
+                </div>
+                <p id="turn-message">Player 1's Turn</p>
+            </div>
+            
+            <div class="game-info">
+                <h2 class="game-title">Dice Rolling</h2>
+                <div class="game-stats">
+                    <span>👁️ 250K Views</span>
+                    <span>⭐ 4.5/5 Rating</span>
+                    <span>🎲 Strategy</span>
+                </div>
+                <p style="color: #ccc;">Roll the dice and reach the target score! Watch out for rolling a 1, which ends your turn.</p>
+            </div>
+
+            <div class="game-modes">
+                <div class="mode-card" onclick="setTargetScore(30)">
+                    <h3>Quick Game</h3>
+                    <p>Target: 30</p>
+                </div>
+                <div class="mode-card" onclick="setTargetScore(50)">
+                    <h3>Standard Mode</h3>
+                    <p>Target: 50</p>
+                </div>
+                <div class="mode-card" onclick="setTargetScore(100)">
+                    <h3>Marathon Mode</h3>
+                    <p>Target: 100</p>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <div class="control-left">
+                    <button class="control-btn" id="likeBtn">
+                        👍 200K
+                    </button>
+                    <button class="control-btn" id="dislikeBtn">
+                        👎 15K
+                    </button>
+                    <button class="control-btn">
+                        ❤️ Favorite
+                    </button>
+                </div>
+                <div class="control-right">
+                    <button class="control-btn" id="reset-btn">
+                        🔄 New Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.5.1/confetti.browser.min.js"></script>
+    <script>
+        let TARGET_SCORE = 50;
+        let currentPlayer = 1;
+        let player1Score = 0;
+        let player2Score = 0;
+        let gameOver = false;
+        let likes = 200000;
+        let dislikes = 15000;
+
+        const dice1El = document.getElementById('dice1');
+        const dice2El = document.getElementById('dice2');
+        const player1ScoreEl = document.getElementById('player1-score');
+        const player2ScoreEl = document.getElementById('player2-score');
+        const player1El = document.getElementById('player1');
+        const player2El = document.getElementById('player2');
+        const turnMessageEl = document.getElementById('turn-message');
+        const resetBtn = document.getElementById('reset-btn');
+        const likeBtn = document.getElementById('likeBtn');
+        const dislikeBtn = document.getElementById('dislikeBtn');
+        const loadingBar = document.querySelector('.loading-bar');
+
+        function setTargetScore(score) { TARGET_SCORE = score;
+        resetGame();
+        }
+
+        function rollDice() {
+            if (gameOver) return;
+
+            dice1El.classList.add('rolling');
+            dice2El.classList.add('rolling');
+
+            setTimeout(() => {
+                dice1El.classList.remove('rolling');
+                dice2El.classList.remove('rolling');
+
+                const dice1 = Math.floor(Math.random() * 6) + 1;
+                const dice2 = Math.floor(Math.random() * 6) + 1;
+
+                dice1El.textContent = dice1;
+                dice2El.textContent = dice2;
+
+                if (dice1 === 1 || dice2 === 1) {
+                    turnMessageEl.textContent = `Player ${currentPlayer} rolled a 1! Turn over.`;
+                    switchPlayer();
+                    return;
+                }
+
+                const rollTotal = dice1 + dice2;
+                if (currentPlayer === 1) {
+                    player1Score += rollTotal;
+                    player1ScoreEl.textContent = player1Score;
+                    checkWinner(1, player1Score);
+                } else {
+                    player2Score += rollTotal;
+                    player2ScoreEl.textContent = player2Score;
+                    checkWinner(2, player2Score);
+                }
+            }, 500);
+        }
+
+        function switchPlayer() {
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            turnMessageEl.textContent = `Player ${currentPlayer}'s Turn`;
+            player1El.classList.toggle('active');
+            player2El.classList.toggle('active');
+        }
+
+        function checkWinner(player, score) {
+            if (score >= TARGET_SCORE) {
+                gameOver = true;
+                turnMessageEl.textContent = `🎉 Player ${player} Wins! 🎉`;
+                
+                // Trigger confetti
+                const duration = 5 * 1000;
+                const animationEnd = Date.now() + duration;
+                const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+                function randomInRange(min, max) {
+                    return Math.random() * (max - min) + min;
+                }
+
+                const interval = setInterval(function() {
+                    const timeLeft = animationEnd - Date.now();
+
+                    if (timeLeft <= 0) {
+                        return clearInterval(interval);
+                    }
+
+                    const particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { 
+                        particleCount, 
+                        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } 
+                    }));
+                    confetti(Object.assign({}, defaults, { 
+                        particleCount, 
+                        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } 
+                    }));
+                }, 250);
+            }
+        }
+
+        function resetGame() {
+            currentPlayer = 1;
+            player1Score = 0;
+            player2Score = 0;
+            gameOver = false;
+
+            player1ScoreEl.textContent = '0';
+            player2ScoreEl.textContent = '0';
+            dice1El.textContent = '-';
+            dice2El.textContent = '-';
+            turnMessageEl.textContent = "Player 1's Turn";
+
+            player1El.classList.add('active');
+            player2El.classList.remove('active');
+        }
+
+        // Interface functionality
+        const menuBtn = document.querySelector('#menuToggle');
+        const sideMenu = document.querySelector('.side-menu');
+        
+        menuBtn.addEventListener('click', () => {
+            const currentWidth = sideMenu.style.width;
+            sideMenu.style.width = currentWidth === '200px' ? '60px' : '200px';
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                if (currentWidth !== '200px') {
+                    item.textContent += ' ' + item.getAttribute('data-tooltip');
+                } else {
+                    item.textContent = item.textContent.split(' ')[0];
+                }
+            });
+        });
+
+        // Like/Dislike system
+        likeBtn.addEventListener('click', function() {
+            likes++;
+            this.innerHTML = `👍 ${Math.floor(likes/1000)}K`;
+        });
+
+        dislikeBtn.addEventListener('click', function() {
+            dislikes++;
+            this.innerHTML = `👎 ${Math.floor(dislikes/1000)}K`;
+        });
+
+        // Loading bar animation
+        function updateLoadingBar() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                loadingBar.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingBar.style.width = '0%';
+                    }, 200);
+                }
+            }, 20);
+        }
+
+        // Event Listeners
+        resetBtn.addEventListener('click', resetGame);
+        dice1El.addEventListener('click', rollDice);
+        dice2El.addEventListener('click', rollDice);
+
+        // Initialize game
+        updateLoadingBar();
+    </script>
+</body>
+</html>
