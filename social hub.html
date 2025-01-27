@@ -1,0 +1,588 @@
+
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduFun</title>
+    <link rel="icon" type="image/png" href=".\assets\logo.png">
+    <link rel="stylesheet" href=".\assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            margin-top: 100px;
+            margin-left: 80px;
+            gap: 20px;
+        }
+
+        .community-feed {
+            width: 70%;
+      background: linear-gradient(135deg, #3b82f6, #9333ea);
+            padding: 20px;
+            border-radius: 15px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 20px rgba(39, 117, 252, 0.8);             transition: transform 0.3s ease-in-out;
+        }
+
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin: 0;
+            color: white;
+        }
+
+        .post-box {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .post-box textarea {
+            width: 100%;
+            height: 120px;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            background-color: #f3f4f6;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            resize: none;
+        }
+
+        .post-box button {
+            background: #2575fc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .post-box button:hover {
+            background: #6a11cb;
+        }
+
+        .post {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            position: relative;
+            font-size: 1.6rem;
+        }
+
+        .post .actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .like-btn, .comment-btn, .share-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #f06292;
+            font-size: 1.5rem;
+        }
+
+        .like-btn:hover, .comment-btn:hover, .share-btn:hover {
+            color: #e91e63;
+        }
+
+        .like-count, .comment-count {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .comment-box {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .comment-box input {
+            width: 90%;
+            padding: 8px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .comment-box button {
+            padding: 8px 15px;
+            background: #2575fc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .comment-box button:hover {
+            background: #6a11cb;
+        }
+
+        /* Tambahan gaya untuk komen */
+        .comment-container {
+            border-bottom: 1px solid #ddd; /* Garis bawah */
+            padding: 8px 0; /* Ruang di atas dan bawah */
+            font-size: 1rem;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin-left: 0;
+                padding: 10px;
+            }
+
+            .community-feed {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+		.user-profiles {
+    width: 30%;
+    background-color: #2b223f;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 20px rgba(39, 117, 252, 0.8);
+    color: white;
+}
+
+.user-profiles header h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: white;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1f1b2e;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.user-card:hover {
+    transform: translateY(-5px);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-details h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.user-details p {
+    margin: 0;
+    color: #bbb;
+    font-size: 1rem;
+}
+
+.user-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.invite-btn, .follow-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.invite-btn {
+    background: #6a11cb;
+    color: white;
+}
+
+.follow-btn {
+    background: #2575fc;
+    color: white;
+}
+
+.invite-btn:hover {
+    background: #3c47f5;
+}
+
+.follow-btn:hover {
+    background: #1b60db;
+}
+
+    </style>
+</head>
+<body>
+    <video class="video-background" autoplay loop muted>
+        <source src="index.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="container">
+        <div class="community-feed">
+            <header>
+                <h1>Community Feed</h1>
+            </header>
+            <div class="post-box">
+                <textarea id="postContent" placeholder="What's on your mind?"></textarea>
+                <button id="postButton">Post</button>
+            </div>
+            <div id="feed"></div>
+        </div>
+		<div class="user-profiles">
+        <header>
+            <h2>Explore Users</h2>
+        </header>
+        <div class="user-card">
+            <div class="user-info">
+                <img src="./assets/profile.jpg" alt="User Profile" class="profile-pic">
+                <div class="user-details">
+                    <h3>John Doe</h3>
+                    <p>@johndoe</p>
+                </div>
+				
+            </div>
+			
+            <div class="user-actions">
+                <button class="invite-btn">Invite</button>
+                <button class="follow-btn">Follow</button>
+            </div>
+        </div>
+        <!-- Tambahkan lebih ramai pengguna di sini -->
+    </div>
+    </div>
+	
+
+    <script>
+        const demoPosts = [
+            { content: "Excited to start this new project! 🚀", comments: ["Good luck!", "Sounds amazing!"], likes: 3 },
+            { content: "Does anyone know a good resource for HTML tutorials?", comments: ["Try W3Schools or MDN!", "I recommend freeCodeCamp."], likes: 5 },
+            { content: "Just finished my first JavaScript project! Feeling proud. 😄", comments: ["Congrats!", "That's awesome! Keep it up!"], likes: 8 },
+        ];
+
+        const postButton = document.getElementById("postButton");
+        const postContent = document.getElementById("postContent");
+        const feed = document.getElementById("feed");
+
+        function createPost(content, likes = 0, comments = []) {
+            const post = document.createElement("div");
+            post.classList.add("post");
+            post.innerHTML = `
+                <div>${content}</div>
+                <div class="actions">
+                    <button class="like-btn" onclick="likePost(this)"><i class="far fa-heart"></i></button>
+                    <span class="like-count">${likes}</span>
+                    <button class="comment-btn" onclick="toggleComments(this)"><i class="fas fa-comment"></i></button>
+                    <span class="comment-count">${comments.length}</span>
+                </div>
+                <div class="comment-box" style="display: none;">
+                    <input type="text" placeholder="Add a comment..." />
+                    <button onclick="addComment(this)">Send</button>
+                </div>
+            `;
+            comments.forEach(comment => {
+                const commentContainer = document.createElement("div");
+                commentContainer.classList.add("comment-container"); // Tambah kelas untuk setiap komen
+                commentContainer.textContent = comment;
+                post.appendChild(commentContainer);
+            });
+            return post;
+        }
+
+        function loadDemoPosts() {
+            demoPosts.forEach(postData => {
+                const post = createPost(postData.content, postData.likes, postData.comments);
+                feed.appendChild(post);
+            });
+        }
+
+        postButton.addEventListener("click", () => {
+            const content = postContent.value.trim();
+            if (content) {
+                feed.prepend(createPost(content));
+                postContent.value = "";
+            }
+        });
+
+        function likePost(likeBtn) {
+            const likeCount = likeBtn.nextElementSibling;
+            likeCount.textContent = parseInt(likeCount.textContent) + 1;
+        }
+
+        function toggleComments(commentBtn) {
+            const commentBox = commentBtn.closest(".post").querySelector(".comment-box");
+            commentBox.style.display = commentBox.style.display === "none" ? "flex" : "none";
+        }
+
+        function addComment(button) {
+            const commentInput = button.closest('.comment-box').querySelector('input');
+            const post = button.closest('.post');
+            const commentCount = post.querySelector('.comment-count');
+
+            if (commentInput.value.trim()) {
+                const commentContainer = document.createElement('div');
+                commentContainer.classList.add('comment-container');
+                commentContainer.textContent = commentInput.value;
+
+                post.appendChild(commentContainer);
+                commentInput.value = '';
+                commentCount.textContent = `${parseInt(commentCount.textContent) + 1}`;
+            }
+        }
+
+
+        document.addEventListener("DOMContentLoaded", loadDemoPosts);
+		document.addEventListener("DOMContentLoaded", () => {
+    const inviteButtons = document.querySelectorAll('.invite-btn');
+    const followButtons = document.querySelectorAll('.follow-btn');
+
+    inviteButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            alert('Invitation sent!');
+            button.textContent = "Invited";
+            button.disabled = true;
+            button.style.background = "#ccc";
+        });
+    });
+
+    followButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            alert('You are now following this user!');
+            button.textContent = "Following";
+            button.disabled = true;
+            button.style.background = "#ccc";
+        });
+    });
+});
+
+    </script>
+</body>
+</html>
+    <nav class="sidebar">
+        <ul class="menu">
+            <li>
+                <a href="home.html">
+                    <i class="fas fa-home"></i>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="educational resources.html">
+                    <i class="fas fa-book"></i>
+                    <span class="text">Educational Resources</span>
+                </a>
+            </li>
+            <li>
+                <a href="leaderboard.html">
+                    <i class="fas fa-trophy"></i>
+                    <span class="text">Leaderboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="social hub.html">
+                    <i class="fas fa-users"></i>
+                    <span class="text">Social Hub</span>
+                </a>
+            </li>
+            <li>
+                <a href="blog.html">
+                    <i class="fas fa-blog"></i>
+                    <span class="text">Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="about us.html">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="text">About Us</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <nav class="top-navbar">
+        <div class="logo">
+            <a href="home.html">
+                <img src="./assets/edufun.png" alt="EduFun Logo">
+            </a>
+            <div class="name">
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="icon">
+            <button><i class="fas fa-bell"></i></button>
+            <button><i class="fas fa-user-friends"></i></button>
+            <button onclick="location.href='index.html'"  > Login</button>
+        </div>
+    </nav>
+<div id="notification-section">
+    <div class="notification-header">
+        Notifications
+    </div>
+    <div class="notification-body">
+        <div class="notification-item">
+            New message received.
+        </div>
+        <div class="notification-item">
+            Your post has been liked!
+        </div>
+        <!-- Add more notifications here -->
+    </div>
+</div>
+
+<script>
+// Function to open the notification
+function showNotification() {
+    const notification = document.getElementById('notification-section');
+    notification.classList.add('open'); // Show the notification
+    setTimeout(() => {
+        notification.classList.add('fade-out'); // Fade out after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('open', 'fade-out'); // Reset for next time
+        }, 1000); // Allow time for fading out before resetting
+    }, 5000); // Keep the notification visible for 5 seconds
+}
+
+// Call showNotification when needed (e.g., on page load, button click, etc.)
+window.onload = () => {
+    showNotification(); // Automatically show notification on page load
+};
+</script>
+	<div id="chat-section">
+    <div class="chat-header">
+        <h3>Friends Chat</h3>
+        <button id="close-chat">&times;</button>
+    </div>
+    <div class="chat-body">
+        <p>No messages yet!</p>
+    </div>
+    <div class="chat-footer">
+        <input type="text" placeholder="Type a message..." />
+        <button>Send</button>
+    </div>
+</div>
+
+    <script>
+	
+// Select DOM elements
+const friendBtn = document.querySelector('#friend-btn');
+const chatSection = document.querySelector('#chat-section');
+const closeChat = document.querySelector('#close-chat');
+const sendBtn = document.querySelector('#send-btn');
+const chatInput = document.querySelector('#chat-input');
+const chatBody = document.querySelector('#chat-body');
+
+// Toggle chat visibility
+friendBtn.addEventListener('click', () => {
+    chatSection.classList.toggle('open'); // Add or remove 'open' class to toggle the chat
+});
+
+// Close the chat when the close button is clicked
+closeChat.addEventListener('click', () => {
+    chatSection.classList.remove('open');
+});
+
+// Send button functionality
+sendBtn.addEventListener('click', () => {
+    const message = chatInput.value.trim();
+
+    if (message !== '') {
+        // Add the user's message to the chat
+        const userMessage = document.createElement('div');
+        userMessage.classList.add('chat-message', 'user-message');
+        userMessage.textContent = message;
+        chatBody.appendChild(userMessage);
+
+        // Clear the input field
+        chatInput.value = '';
+
+        // Scroll to the latest message
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // Simulate a bot reply if the user types "hi"
+        setTimeout(() => {
+            const botMessage = document.createElement('div');
+            botMessage.classList.add('chat-message', 'bot-message');
+
+            // Respond to specific keywords
+            if (message.toLowerCase() === 'hi') {
+                botMessage.textContent = 'Hello! How can I help you today?';
+            } else {
+                botMessage.textContent = "I'm here to chat! 😊";
+            }
+
+            chatBody.appendChild(botMessage);
+            chatBody.scrollTop = chatBody.scrollHeight; // Scroll to the latest bot reply
+        }, 1000); // Delay for the bot's reply (1 second)
+    }
+});
+</script>
+
+    <script>
+        // Highlight the current active menu item
+        const menuItems = document.querySelectorAll('.menu li a');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                menuItems.forEach(link => link.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
