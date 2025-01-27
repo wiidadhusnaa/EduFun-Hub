@@ -1,0 +1,442 @@
+	<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduFun</title>
+   <link rel="stylesheet" href=".\assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	  <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: rgb(70,21,68);
+            background: linear-gradient(0deg, rgba(70,21,68,1) 0%, rgba(1,1,1,1) 100%);
+      min-height: 100vh;
+	   margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+    overflow-x: hidden; /* Elakkan elemen melimpah ke kanan */
+}
+
+.container {
+    max-width: 1200px; /* Tetapkan lebar maksimum kontainer */
+    margin: 0 auto; /* Pusatkan kontainer */
+    padding: 1rem;
+    overflow: hidden; /* Elakkan melimpah */
+	margin-bottom:6rem;
+	margin-top:10rem;
+}
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        .header p {
+            color: white;
+            font-size: 1.1rem;
+        }
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Tetapkan grid responsif */
+    gap: 2rem; /* Jarak antara elemen buku */
+    padding: 1rem;
+    max-width: 100%; /* Pastikan grid sesuai dengan kontainer */
+    margin: 0 auto;
+	margin-left:60px;
+}
+
+.book {
+position: relative;
+            border-radius: 15px;
+            width: 100%;
+            height: 200px;
+            background-color: black;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: preserve-3d;
+            perspective: 2000px;
+            transition: transform 0.3s ease;
+			}
+
+        .book:hover {
+            transform: translateY(-5px);
+        }
+
+        .cover {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        }
+
+        .book:hover .cover {
+            transform: rotatey(-80deg);
+            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .book-content {
+            padding: 1.8rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #333;
+        }
+
+        .chapter-label {
+            font-size: 1.5rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .chapter-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .open-button {
+            padding: 0.8rem 1.2rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            color: black;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .open-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+
+.book-inner {
+            height: 100%;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>📚 Library Material</h1>
+            <p>Hover over a book to explore its contents</p>
+        </header>
+        <div class="book-grid" id="bookGrid"></div>
+    </div>
+
+    <script>
+        const books = [
+            {
+                name: 'Introduction to Information Skills',
+                url: './library/W1.pdf',
+				description: '',
+   gradientStart: '#4158D0',
+                        gradientEnd: '#C850C0',
+						chapter: 'Chapter 1'
+            },
+            {
+                name: 'Types of Libraries',
+                url: './library/W2.pdf',
+				description: '',
+   gradientStart: '#4158D0',
+                        gradientEnd: '#C850C0',
+						chapter: 'Chapter 2'
+            },
+            {
+                name: 'The Catalog',
+                url: './library/W3.pdf',
+				description: '',
+   gradientStart: '#4158D0',
+                        gradientEnd: '#C850C0',
+						chapter: 'Chapter 3'
+            },
+            {
+                name: 'OPAC',
+                url: './library/W4.pdf',
+				description: '',
+   gradientStart: '#4158D0',
+                        gradientEnd: '#C850C0',
+						chapter: 'Chapter 4'
+            },
+			{
+                name: 'Introduction to Classification',
+                url: './library/W6.pdf',
+				description: '',
+   gradientStart: '#4158D0',
+                        gradientEnd: '#C850C0',
+						chapter: 'Chapter 5'
+            }
+
+        ];
+
+        class BookLibrary {
+            constructor(containerId, books) {
+                this.container = document.getElementById(containerId);
+                this.books = books;
+                this.init();
+            }
+
+            createBookElement(book) {
+                const bookDiv = document.createElement('div');
+                bookDiv.className = 'book';
+                bookDiv.style.setProperty('--gradient-start', book.gradientStart);
+                bookDiv.style.setProperty('--gradient-end', book.gradientEnd);
+
+                bookDiv.innerHTML = `
+                    <div class="book-inner">
+                        <button class="open-button" onclick="window.open('${book.url}', '_blank')">
+                            Open Chapter
+                            <span class="icon">→</span>
+                        </button>
+                    </div>
+                    <div class="cover">
+                        <div>
+                            <span class="chapter-label">${book.chapter}</span>
+                            <h3 class="chapter-title">${book.name}</h3>
+                            <p class="description">${book.description}</p>
+                        </div>
+                    </div>
+                `;
+
+                return bookDiv;
+            }
+
+            init() {
+                this.books.forEach(book => {
+                    const bookElement = this.createBookElement(book);
+                    this.container.appendChild(bookElement);
+                });
+            }
+        }
+
+// Initialize the library when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new BookLibrary('bookGrid', books);
+        });
+    </script>
+    <nav class="sidebar">
+        <ul class="menu">
+            <li>
+                <a href="home.html">
+                    <i class="fas fa-home"></i>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="educational resources.html">
+                    <i class="fas fa-book"></i>
+                    <span class="text">Educational Resources</span>
+                </a>
+            </li>
+			            <li>
+                <a href="leaderboard.html">
+                    <i class="fas fa-trophy"></i>
+                    <span class="text">Leaderboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="social hub.html">
+                    <i class="fas fa-users"></i>
+                    <span class="text">Social Hub</span>
+                </a>
+            </li>
+            <li>
+                <a href="blog.html">
+                    <i class="fas fa-blog"></i>
+                    <span class="text">Blog</span>
+                </a>
+            </li>
+			 <li>
+                <a href="about us.html">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="text">About Us</span>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+	<nav class="top-navbar">
+
+        <div class="logo">
+		<a href="home.html">
+		 <img src="./assets/edufun.png" alt="EduFun Logo">
+		 </a>
+		 <div class="name">
+		 </div>
+</div>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="icon">
+            <button><i class="fas fa-bell"></i></button>
+            <button><i class="fas fa-user-friends"></i></button>
+            <button onclick="location.href='index.html'"  >Login</button>
+        </div>
+    </nav>
+	<div id="notification-section">
+    <div class="notification-header">
+        Notifications
+    </div>
+    <div class="notification-body">
+        <div class="notification-item">
+            New message received.
+        </div>
+        <div class="notification-item">
+            Your post has been liked!
+        </div>
+        <!-- Add more notifications here -->
+    </div>
+</div>
+
+<script>
+// Function to open the notification
+function showNotification() {
+    const notification = document.getElementById('notification-section');
+    notification.classList.add('open'); // Show the notification
+    setTimeout(() => {
+        notification.classList.add('fade-out'); // Fade out after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('open', 'fade-out'); // Reset for next time
+        }, 1000); // Allow time for fading out before resetting
+    }, 5000); // Keep the notification visible for 5 seconds
+}
+
+// Call showNotification when needed (e.g., on page load, button click, etc.)
+window.onload = () => {
+    showNotification(); // Automatically show notification on page load
+};
+</script>
+	<div id="chat-section">
+    <div class="chat-header">
+        <h3>Friends Chat</h3>
+        <button id="close-chat">&times;</button>
+    </div>
+    <div class="chat-body">
+        <p>No messages yet!</p>
+    </div>
+    <div class="chat-footer">
+        <input type="text" placeholder="Type a message..." />
+        <button>Send</button>
+    </div>
+</div>
+
+    <script>
+	
+// Select DOM elements
+const friendBtn = document.querySelector('#friend-btn');
+const chatSection = document.querySelector('#chat-section');
+const closeChat = document.querySelector('#close-chat');
+const sendBtn = document.querySelector('#send-btn');
+const chatInput = document.querySelector('#chat-input');
+const chatBody = document.querySelector('#chat-body');
+
+// Toggle chat visibility
+friendBtn.addEventListener('click', () => {
+    chatSection.classList.toggle('open'); // Add or remove 'open' class to toggle the chat
+});
+
+// Close the chat when the close button is clicked
+closeChat.addEventListener('click', () => {
+    chatSection.classList.remove('open');
+});
+
+// Send button functionality
+sendBtn.addEventListener('click', () => {
+    const message = chatInput.value.trim();
+
+    if (message !== '') {
+        // Add the user's message to the chat
+        const userMessage = document.createElement('div');
+        userMessage.classList.add('chat-message', 'user-message');
+        userMessage.textContent = message;
+        chatBody.appendChild(userMessage);
+
+        // Clear the input field
+        chatInput.value = '';
+
+        // Scroll to the latest message
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // Simulate a bot reply if the user types "hi"
+        setTimeout(() => {
+            const botMessage = document.createElement('div');
+            botMessage.classList.add('chat-message', 'bot-message');
+
+            // Respond to specific keywords
+            if (message.toLowerCase() === 'hi') {
+                botMessage.textContent = 'Hello! How can I help you today?';
+            } else {
+                botMessage.textContent = "I'm here to chat! 😊";
+            }
+
+            chatBody.appendChild(botMessage);
+            chatBody.scrollTop = chatBody.scrollHeight; // Scroll to the latest bot reply
+        }, 1000); // Delay for the bot's reply (1 second)
+    }
+});
+</script>
+
+    <script>
+	
+	// Highlight the current active menu item
+const menuItems = document.querySelectorAll('.menu li a');
+
+menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+        menuItems.forEach(link => link.classList.remove('active'));
+        item.classList.add('active');
+    });
+});
+</script>
+
+
+</body>
+</html>

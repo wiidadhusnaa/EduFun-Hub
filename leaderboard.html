@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href=".\assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <title>Edufun</title>
+  <style>
+    /* General Reset */
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle, #1e293b, #0f172a);
+      color: white;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .video-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1; /* Send the video behind the content */
+    }
+
+    /* Leaderboard Styling */
+    .leaderboard {
+      width: 100%;
+      max-width: 600px;
+      background: linear-gradient(135deg, #3b82f6, #9333ea);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      border-radius: 20px;
+      text-align: center;
+      max-height: 80vh;
+	  margin-top: 12rem;
+	  margin-left: 35rem;
+    }
+
+    .leaderboard::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0));
+      animation: pulse 5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+    }
+
+    /* Header Styling */
+    .leaderboard header h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px #ffffff, 0 0 10px #3b82f6, 0 0 20px #9333ea;
+      }
+      to {
+        text-shadow: 0 0 10px #ffffff, 0 0 15px #3b82f6, 0 0 30px #9333ea;
+      }
+    }
+
+    /* Table Styling */
+    .leaderboard table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #f0f0f0;
+    }
+
+    .leaderboard th, .leaderboard td {
+      padding: 12px;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .leaderboard th {
+      background: rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      font-size: 1.8rem;
+    }
+
+    .leaderboard td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	        font-size: 1.5rem;
+
+    }
+
+    .leaderboard tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .leaderboard tr:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transition: background 0.3s ease-in-out;
+    }
+
+    /* Firework Animation */
+    .firework {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      animation: explode 5s ease-in-out infinite;
+    }
+
+    @keyframes explode {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body> 
+
+    <video class="video-bg" autoplay loop muted playsinline>
+        <source src=".\video\galaxybg.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+
+  <div class="leaderboard">
+    <header>
+      <h1>Leaderboard</h1>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Name</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardBody">
+        <!-- Leaderboard rows will be dynamically added -->
+      </tbody>
+    </table>
+  </div>
+
+  
+  <script>
+    // Populate Leaderboard
+    const leaderboardBody = document.getElementById("leaderboardBody");
+    const players = [
+      { name: "Danial", score: 1200 }, { name: "Heeseung", score: 1000 },
+      { name: "Charlie", score: 800 }, { name: "Jackson", score: 950 },
+      { name: "Mark", score: 1300 }, { name: "GamerPro", score: 2000 }
+    ];
+
+    function updateLeaderboard() {
+  leaderboardBody.innerHTML = "";
+  players.sort((a, b) => b.score - a.score).forEach((player, index) => {
+    const row = document.createElement("tr");
+    let rankDisplay = "";
+
+    // Assign medal emojis for the top 3
+    if (index === 0) rankDisplay = "🥇"; // Gold medal
+    else if (index === 1) rankDisplay = "🥈"; // Silver medal
+    else if (index === 2) rankDisplay = "🥉"; // Bronze medal
+    else rankDisplay = index + 1; // Regular rank for others
+
+    row.innerHTML = `
+      <td>${rankDisplay}</td>
+      <td>${player.name}</td>
+      <td>${player.score}</td>
+    `;
+    leaderboardBody.appendChild(row);
+  });
+}
+
+
+    // Randomly Update Scores
+    function simulateScoreUpdate() {
+      const randomPlayer = players[Math.floor(Math.random() * players.length)];
+      randomPlayer.score += Math.floor(Math.random() * 200) + 100;
+      if (randomPlayer.score > 2000) createFirework();
+      updateLeaderboard();
+    }
+
+    // Firework Effect
+    function createFirework() {
+      const firework = document.createElement("div");
+      firework.className = "firework";
+      firework.style.left = `${Math.random() * 100}%`;
+      firework.style.top = `${Math.random() * 100}%`;
+      document.body.appendChild(firework);
+      setTimeout(() => firework.remove(), 1000);
+    }
+
+    // Initialize Leaderboard
+    updateLeaderboard();
+    setInterval(simulateScoreUpdate, 5000);
+  </script>
+      <nav class="sidebar">
+        <ul class="menu">
+            <li>
+                <a href="home.html">
+                    <i class="fas fa-home"></i>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="educational resources.html">
+                    <i class="fas fa-book"></i>
+                    <span class="text">Educational Resources</span>
+                </a>
+            </li>
+			            <li>
+                <a href="leaderboard.html">
+                    <i class="fas fa-trophy"></i>
+                    <span class="text">Leaderboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="social hub.html">
+                    <i class="fas fa-users"></i>
+                    <span class="text">Social Hub</span>
+                </a>
+            </li>
+            <li>
+                <a href="blog.html">
+                    <i class="fas fa-blog"></i>
+                    <span class="text">Blog</span>
+                </a>
+            </li>
+			 <li>
+                <a href="about us.html">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="text">About Us</span>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+	<nav class="top-navbar">
+
+        <div class="logo">
+		<a href="home.html">
+		 <img src="./assets/edufun.png" alt="EduFun Logo">
+		 </a>
+		 <div class="name">
+		 </div>
+</div>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="icon">
+            <button><i class="fas fa-bell"></i></button>
+            <button><i class="fas fa-user-friends"></i></button>
+            <button onclick="location.href='index.html'"  >Login</button>
+        </div>
+    </nav>
+	<div id="notification-section">
+    <div class="notification-header">
+        Notifications
+    </div>
+    <div class="notification-body">
+        <div class="notification-item">
+            New message received.
+        </div>
+        <div class="notification-item">
+            Your post has been liked!
+        </div>
+        <!-- Add more notifications here -->
+    </div>
+</div>
+
+<script>
+// Function to open the notification
+function showNotification() {
+    const notification = document.getElementById('notification-section');
+    notification.classList.add('open'); // Show the notification
+    setTimeout(() => {
+        notification.classList.add('fade-out'); // Fade out after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('open', 'fade-out'); // Reset for next time
+        }, 1000); // Allow time for fading out before resetting
+    }, 5000); // Keep the notification visible for 5 seconds
+}
+
+// Call showNotification when needed (e.g., on page load, button click, etc.)
+window.onload = () => {
+    showNotification(); // Automatically show notification on page load
+};
+</script>
+	<div id="chat-section">
+    <div class="chat-header">
+        <h3>Friends Chat</h3>
+        <button id="close-chat">&times;</button>
+    </div>
+    <div class="chat-body">
+        <p>No messages yet!</p>
+    </div>
+    <div class="chat-footer">
+        <input type="text" placeholder="Type a message..." />
+        <button>Send</button>
+    </div>
+</div>
+
+    <script>
+	
+// Select DOM elements
+const friendBtn = document.querySelector('#friend-btn');
+const chatSection = document.querySelector('#chat-section');
+const closeChat = document.querySelector('#close-chat');
+const sendBtn = document.querySelector('#send-btn');
+const chatInput = document.querySelector('#chat-input');
+const chatBody = document.querySelector('#chat-body');
+
+// Toggle chat visibility
+friendBtn.addEventListener('click', () => {
+    chatSection.classList.toggle('open'); // Add or remove 'open' class to toggle the chat
+});
+
+// Close the chat when the close button is clicked
+closeChat.addEventListener('click', () => {
+    chatSection.classList.remove('open');
+});
+
+// Send button functionality
+sendBtn.addEventListener('click', () => {
+    const message = chatInput.value.trim();
+
+    if (message !== '') {
+        // Add the user's message to the chat
+        const userMessage = document.createElement('div');
+        userMessage.classList.add('chat-message', 'user-message');
+        userMessage.textContent = message;
+        chatBody.appendChild(userMessage);
+
+        // Clear the input field
+        chatInput.value = '';
+
+        // Scroll to the latest message
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // Simulate a bot reply if the user types "hi"
+        setTimeout(() => {
+            const botMessage = document.createElement('div');
+            botMessage.classList.add('chat-message', 'bot-message');
+
+            // Respond to specific keywords
+            if (message.toLowerCase() === 'hi') {
+                botMessage.textContent = 'Hello! How can I help you today?';
+            } else {
+                botMessage.textContent = "I'm here to chat! 😊";
+            }
+
+            chatBody.appendChild(botMessage);
+            chatBody.scrollTop = chatBody.scrollHeight; // Scroll to the latest bot reply
+        }, 1000); // Delay for the bot's reply (1 second)
+    }
+});
+</script>
+
+    <script>
+	
+	// Highlight the current active menu item
+const menuItems = document.querySelectorAll('.menu li a');
+
+menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+        menuItems.forEach(link => link.classList.remove('active'));
+        item.classList.add('active');
+    });
+});
+</script>
+<iframe
+id="background-sound"
+    style="display: none;"
+    src="https://www.youtube.com/embed/AnMhdn0wJ4I?autoplay=1&loop=1&playlist=AnMhdn0wJ4I&mute=1"
+    allow="autoplay"  ></iframe>
+
+
+</body>
+</html>
