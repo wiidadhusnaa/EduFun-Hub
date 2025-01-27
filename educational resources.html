@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduFun</title>
+   <link rel="stylesheet" href=".\assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	  <style>
+body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the video covers the screen */
+            z-index: -1; /* Places the video behind content */
+        }
+.card {
+  display: flex;
+  height: 280px;
+  width: 900px;
+  background: linear-gradient(45deg, #2a1f6f, #655cd1);
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  margin-left: -80px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  left: 0px;
+  top: 100px;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.card:not(:first-child) {
+  margin-left: 200px;
+}
+
+.card:hover {
+  box-shadow: 
+    0 20px 40px rgba(101, 92, 209, 0.4),
+    0 0 80px rgba(101, 92, 209, 0.2),
+    inset 0 0 40px rgba(101, 92, 209, 0.3);
+  background: linear-gradient(45deg, #3a2b8f, #7267d9);
+}
+
+.card:hover::before {
+  left: 100%;
+}
+
+.card:hover ~ .card {
+  transform: translateX(100px) scale(0.95);
+  filter: brightness(0.7) blur(2px);
+}
+
+.title-1 {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 800;
+  position: absolute;
+  left: 30px;
+  top: 15px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.card:hover .title-1 {
+  transform: scale(1.1);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    left: 50px;
+
+}
+.button-group {
+  display: flex; /* Ensure buttons are aligned horizontally */
+  gap: 15px; /* Add space between the buttons */
+  margin-top: 210px; 
+  margin-left:20px;
+}
+
+.btn-sub {
+  position: relative;
+  width: 120px;
+  height: 32px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(45deg, #4a2f7c, #8a4ff8);
+  color: white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.btn-sub:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(45deg, #8a4ff8, #d059ff);
+  box-shadow: 
+    0 0 30px rgba(138, 79, 248, 0.6),
+    0 0 60px rgba(138, 79, 248, 0.3),
+    inset 0 0 15px rgba(255, 255, 255, 0.5);
+  letter-spacing: 2px;
+}
+
+.bar {
+  position: relative;
+  top: 250px;
+  height: 5px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.emptybar {
+  background-color: rgba(32, 28, 41, 0.5);
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+}
+
+.filledbar {
+  position: absolute;
+  top: 0px;
+  z-index: 3;
+  width: 0px;
+  height: 100%;
+  background: linear-gradient(90deg, #8a4ff8, #d059ff);
+  box-shadow: 0 0 20px rgba(138, 79, 248, 0.5);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover .filledbar {
+  width: 100%;
+  transform: translateX(0);
+  filter: brightness(1.5);
+}
+
+.content {
+  position: absolute;
+  padding: 20px;
+  top: 60px;
+  color: #eae0fd;
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+}
+
+.card:hover .content {
+  transform: translateY(-5px);
+  opacity: 1;
+  text-shadow: 0 0 5px rgba(234, 224, 253, 0.3);
+}
+ @media (max-width: 768px) {
+            .card {
+                margin: 5px ;
+				width:400px;
+				height:300px;
+				overflow:scrool;
+				
+            }
+
+            .title-1 {
+                font-size: 18px;
+            }
+
+            .content {
+                font-size: 12px;
+            }
+
+            .btn-sub {
+                font-size: 12px;
+                padding: 8px 12px;
+				margin-top:3rem;
+            }
+
+            .top-navbar .icon button {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                width: 50px;
+            }
+
+            .title-1 {
+                font-size: 16px;
+            }
+
+            .content {
+                font-size: 11px;
+            }
+
+            .btn-sub {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+
+            .top-navbar .search-bar input {
+                width: 100%;
+                font-size: 12px;
+            }
+
+        
+    </style>
+</head>
+<body>
+ <video class="video-background" autoplay loop muted>
+        <source src="./assets/index.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+<div class="card">
+  <div class="title-1"> ARCHIVES MANAGEMENET</div>
+  <div class="content">
+     Foundation of Archives Administration equips students with essential 
+	 knowledge and skills in records and archives management. It covers 
+	 the lifecycle of records, classification techniques, preservation 
+	 methods, legal frameworks, and the impact of digital technology on 
+	 archiving. This subject prepares students to effectively manage and 
+	 preserve both physical and digital archives, ensuring their accessibility and longevity.
+  </div>
+   <div class="button-group">
+  <button class="btn-sub"  onclick="location.href='IMD313.html';">Learn more</button>
+    <button class="btn-sub" onclick="location.href='archquiz.html';">Play Quiz</button>
+
+  </div>
+  <div class="bar">
+    <div class="emptybar"></div>
+    <div class="filledbar"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="title-1">CONTENT MANAGEMENT</div>
+  <div class="content">
+Content management refers to the process of creating, organizing, storing, and maintaining 
+digital content throughout its lifecycle. It involves managing various types of content, such 
+as text, images, videos, and documents, to ensure they are easily accessible, properly organized,
+ and up-to-date.	 preserve both physical and digital archives, ensuring their accessibility 
+ and longevity.
+  </div>
+   <div class="button-group">
+  <button class="btn-sub"  onclick="location.href='content.html';">Learn more</button>
+    <button class="btn-sub" onclick="location.href='conquiz.html';">Play Quiz</button>
+
+  </div>
+  <div class="bar">
+    <div class="emptybar"></div>
+    <div class="filledbar"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="title-1">LIBRARY MANAGEMENT</div>
+  <div class="content">
+Library Management involves the efficient administration and organization of library 
+resources, services, and operations to meet the needs of users. It combines traditional 
+methods with modern technology to manage both physical and digital resources effectively.  </div>
+   <div class="button-group">
+  <button class="btn-sub"  onclick="location.href='library.html';">Learn more</button>
+    <button class="btn-sub" onclick="location.href='libquiz.html';">Play Quiz</button>
+
+  </div>
+  <div class="bar">
+    <div class="emptybar"></div>
+    <div class="filledbar"></div>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="title-1">SYSTEM MANAGEMENT</div>
+  <div class="content">
+A Basic Web Content Management System (CMS) is a software platform or application that 
+helps users create, manage, and publish digital content on websites without needing advanced 
+technical or coding skills. It provides a user-friendly interface for organizing content, 
+customizing the website, and handling various functions related to web management.  </div>
+   <div class="button-group">
+  <button class="btn-sub"  onclick="location.href='IMD318.html';">Learn more</button>
+    <button class="btn-sub" onclick="location.href='sysquiz.html';">Play Quiz</button>
+
+  </div>
+  <div class="bar">
+    <div class="emptybar"></div>
+    <div class="filledbar"></div>
+  </div>
+</div>
+
+
+    <nav class="sidebar">
+        <ul class="menu">
+            <li>
+                <a href="home.html">
+                    <i class="fas fa-home"></i>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="educational resources.html">
+                    <i class="fas fa-book"></i>
+                    <span class="text">Educational Resources</span>
+                </a>
+            </li>
+			            <li>
+                <a href="leaderboard.html">
+                    <i class="fas fa-trophy"></i>
+                    <span class="text">Leaderboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="social hub.html">
+                    <i class="fas fa-users"></i>
+                    <span class="text">Social Hub</span>
+                </a>
+            </li>
+            <li>
+                <a href="blog.html">
+                    <i class="fas fa-blog"></i>
+                    <span class="text">Blog</span>
+                </a>
+            </li>
+			 <li>
+                <a href="about us.html">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="text">About Us</span>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+	<nav class="top-navbar">
+
+        <div class="logo">
+		<a href="home.html">
+		 <img src="./assets/edufun.png" alt="EduFun Logo">
+		 </a>
+		 <div class="name">
+		 </div>
+</div>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="icon">
+            <button><i class="fas fa-bell"></i></button>
+            <button><i class="fas fa-user-friends"></i></button>
+            <button onclick="location.href='index.html'"  >Login</button>
+        </div>
+    </nav>
+	<div id="notification-section">
+    <div class="notification-header">
+        Notifications
+    </div>
+    <div class="notification-body">
+        <div class="notification-item">
+            New message received.
+        </div>
+        <div class="notification-item">
+            Your post has been liked!
+        </div>
+        <!-- Add more notifications here -->
+    </div>
+</div>
+
+<script>
+// Function to open the notification
+function showNotification() {
+    const notification = document.getElementById('notification-section');
+    notification.classList.add('open'); // Show the notification
+    setTimeout(() => {
+        notification.classList.add('fade-out'); // Fade out after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('open', 'fade-out'); // Reset for next time
+        }, 1000); // Allow time for fading out before resetting
+    }, 5000); // Keep the notification visible for 5 seconds
+}
+
+// Call showNotification when needed (e.g., on page load, button click, etc.)
+window.onload = () => {
+    showNotification(); // Automatically show notification on page load
+};
+</script>
+	<div id="chat-section">
+    <div class="chat-header">
+        <h3>Friends Chat</h3>
+        <button id="close-chat">&times;</button>
+    </div>
+    <div class="chat-body">
+        <p>No messages yet!</p>
+    </div>
+    <div class="chat-footer">
+        <input type="text" placeholder="Type a message..." />
+        <button>Send</button>
+    </div>
+</div>
+
+    <script>
+	
+// Select DOM elements
+const friendBtn = document.querySelector('#friend-btn');
+const chatSection = document.querySelector('#chat-section');
+const closeChat = document.querySelector('#close-chat');
+const sendBtn = document.querySelector('#send-btn');
+const chatInput = document.querySelector('#chat-input');
+const chatBody = document.querySelector('#chat-body');
+
+// Toggle chat visibility
+friendBtn.addEventListener('click', () => {
+    chatSection.classList.toggle('open'); // Add or remove 'open' class to toggle the chat
+});
+
+// Close the chat when the close button is clicked
+closeChat.addEventListener('click', () => {
+    chatSection.classList.remove('open');
+});
+
+// Send button functionality
+sendBtn.addEventListener('click', () => {
+    const message = chatInput.value.trim();
+
+    if (message !== '') {
+        // Add the user's message to the chat
+        const userMessage = document.createElement('div');
+        userMessage.classList.add('chat-message', 'user-message');
+        userMessage.textContent = message;
+        chatBody.appendChild(userMessage);
+
+        // Clear the input field
+        chatInput.value = '';
+
+        // Scroll to the latest message
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // Simulate a bot reply if the user types "hi"
+        setTimeout(() => {
+            const botMessage = document.createElement('div');
+            botMessage.classList.add('chat-message', 'bot-message');
+
+            // Respond to specific keywords
+            if (message.toLowerCase() === 'hi') {
+                botMessage.textContent = 'Hello! How can I help you today?';
+            } else {
+                botMessage.textContent = "I'm here to chat! 😊";
+            }
+
+            chatBody.appendChild(botMessage);
+            chatBody.scrollTop = chatBody.scrollHeight; // Scroll to the latest bot reply
+        }, 1000); // Delay for the bot's reply (1 second)
+    }
+});
+</script>
+
+    <script>
+	
+	// Highlight the current active menu item
+const menuItems = document.querySelectorAll('.menu li a');
+
+menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+        menuItems.forEach(link => link.classList.remove('active'));
+        item.classList.add('active');
+    });
+});
+</script>
+<div class="footer">
+  <p>Footer</p>
+</div>
+
+</body>
+</html>  
+
