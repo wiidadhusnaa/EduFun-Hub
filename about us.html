@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: white;
+	    scroll-behavior: smooth;
+        }
+
+	/* Side Navigation Bar */
+        .side-nav {
+            position: fixed;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .side-nav a {
+            display: block;
+            text-decoration: none;
+            padding: 10px;
+            background: #bc40b9;
+            color: white;
+            text-align: center;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .side-nav a:hover {
+            background: #9b59b6;
+            transform: scale(1.2);
+        }
+
+        .side-nav a span {
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* Show text on hover */
+        .side-nav a:hover span {
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        /* Hero Section */
+        .parallax-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .parallax-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .parallax-section::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to top, #bc40b9, transparent);
+            z-index: 10;
+        }
+
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+
+        .astronaut {
+            position: absolute;
+            bottom: 0;
+            height: 60%;
+            width: auto;
+            z-index: 5;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .planet {
+            position: absolute;
+            width: 15%;
+            height: auto;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .planet-left {
+            top: 15%;
+            left: 5%;
+            animation: rotatePlanet 20s linear infinite;
+        }
+
+        .planet-right {
+            top: 15%;
+            right: 5%;
+            animation: rotatePlanet 25s linear infinite reverse;
+        }
+
+        @keyframes rotatePlanet {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .title {
+            position: relative;
+            color: #fff;
+            font-size: 10em;
+            text-align: center;
+            z-index: 5;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Mission and Vision Section */
+        #mission-vision {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #bc40b9, #3b1053);
+            position: relative;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        #mission-vision.revealed {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #mission-vision h2 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .mission-vision-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .mission-card, .vision-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            border: 2px solid transparent; /* Transparent border initially */
+            background-clip: padding-box; /* Keeps the border effect inside the card */
+            animation: neonBorder 1.5s infinite alternate; /* Neon border animation */
+        }
+
+        /* Neon Border Animation */
+        @keyframes neonBorder {
+            0% {
+                border-color: #bc40b9;
+                box-shadow: 0 0 5px #bc40b9, 0 0 10px #bc40b9, 0 0 20px #bc40b9, 0 0 40px #bc40b9;
+            }
+            50% {
+                border-color: #9b59b6;
+                box-shadow: 0 0 5px #9b59b6, 0 0 10px #9b59b6, 0 0 20px #9b59b6, 0 0 40px #9b59b6;
+            }
+            100% {
+                border-color: #8a2be2;
+                box-shadow: 0 0 5px #8a2be2, 0 0 10px #8a2be2, 0 0 20px #8a2be2, 0 0 40px #8a2be2;
+            }
+        }
+
+        .mission-card:hover, .vision-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .mission-card h3, .vision-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .mission-card p, .vision-card p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        /* Meet the Team Section */
+        #meet-the-team {
+            padding: 100px 20px;
+            background: #2c003e;
+            text-align: center;
+            width: 100%;
+            height: 100vh;
+            opacity: 0;
+            transform: translateY(-100px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        #meet-the-team.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #meet-the-team h2 {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+	/* Style for the team member images */
+	#meet-the-team img {
+	width: 150px; /* Adjust size as needed */
+	height: 150px; /* Maintain aspect ratio or set both width and height */
+	border-radius: 50%; /* To keep it circular */
+	margin: 10px auto; /* Center alignment */
+	display: block; /* Centers the image */
+	object-fit: cover; /* Ensures the image fits nicely in the circle */
+	transition: transform 0.3s; /* For hover effect */
+	}
+
+	#meet-the-team img:hover {
+	transform: scale(1.1); /* Slightly enlarges image on hover */
+	}
+
+        .team-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto; /* Centers the container */
+        }
+
+        .card {
+            perspective: 1000px;
+            position: relative;
+            width: 100%; /* Make the card responsive */
+            max-width: 250px;
+            height: 350px;
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            backface-visibility: hidden;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: transform 0.6s;
+        }
+
+        .card-front {
+            background: #bc40b9;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .card-front img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+        }
+
+        .card-back {
+            background: #3b1053;
+            color: white;
+            transform: rotateY(180deg);
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .card:hover .card-front {
+            transform: rotateY(180deg);
+        }
+
+        .card:hover .card-back {
+            transform: rotateY(360deg);
+        }
+
+        /* Section 4: Our Values */
+        #our-values {
+            display: flex; /* Enable flexbox */
+            flex-direction: column; /* Stack items vertically */
+            justify-content: center; /* Center items vertically */
+            align-items: center; /* Center items horizontally */
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #3b1053, #bc40b9);
+            text-align: center;
+            color: white;
+            width: 100%;
+            height: 100vh; /* Full viewport height */
+            box-sizing: border-box; /* Ensure padding is included in the height */
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        #our-values.revealed {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .values-container h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .values-container p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+</style>
+
+<body>
+    <!-- Side Navigation -->
+    <div class="side-nav">
+        <a href="#hero"><span>Home</span></a>
+        <a href="#mission-vision"><span>Mission</span></a>
+        <a href="#meet-the-team"><span>Team</span></a>
+        <a href="#our-values"><span>Values</span></a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="parallax-section" id="hero">
+        <img src=".\assets\back.jpg" alt="Space Background" class="parallax-bg">
+        <h1 class="title">EduFun Hub</h1>
+        <img src=".\assets\man.png" alt="Astronaut" class="astronaut">
+        <img src=".\assets\1.png" alt="Left Planet" class="planet planet-left">
+        <img src=".\assets\2.png" alt="Right Planet" class="planet planet-right">
+    </section>
+
+    <!-- Mission and Vision Section -->
+    <section id="mission-vision" class="section">
+        <div class="container">
+            <h2>Mission and Vision</h2>
+            <div class="mission-vision-grid">
+                <div class="mission-card">
+                    <h3>Mission</h3>
+                    <p>We provide an engaging platform that combines fun and learning through interactive games and tailored educational content for Diploma in Information Management students and beyond.</p>
+                </div>
+                <div class="vision-card">
+                    <h3>Vision</h3>
+                    <p>To be the premier digital platform that combines education and entertainment, offering a dynamic and engaging exploration of the Diploma in Information Management.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Meet the Team Section -->
+<section id="meet-the-team">
+    <h2>Meet the Team</h2>
+    <div class="team-container">
+        <!-- Card 1 -->
+        <div class="card">
+            <div class="card-front">
+                <img src=".\assets\umul.jpg" alt="UMUL">
+                <h3>UMUL</h3>
+            </div>
+            <div class="card-back">
+                <h3>Content Creator</h3>
+                <p>UMUL oversees creative content creation and ensures every element aligns with our vision of fun and learning.</p>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="card">
+            <div class="card-front">
+                <img src=".\assets\sya.jpg" alt="SYA">
+                <h3>SYA</h3>
+            </div>
+            <div class="card-back">
+                <h3>Lead Designer</h3>
+                <p>SYA brings the visuals to life with her expertise in design, ensuring an engaging and intuitive experience.</p>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="card">
+            <div class="card-front">
+                <img src=".\assets\mai.jpg" alt="MAI">
+                <h3>MAIRAH</h3>
+            </div>
+            <div class="card-back">
+                <h3>Project Manager</h3>
+                <p>MAI ensures every aspect of the project runs smoothly and on schedule.</p>
+            </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="card">
+            <div class="card-front">
+                <img src=".\assets\wi.jpg" alt="WI">
+                <h3>WIDAD</h3>
+            </div>
+            <div class="card-back">
+                <h3>Developer</h3>
+                <p>WI handles the technical development, ensuring functionality and responsiveness across all platforms.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Section 4: Our Values -->
+    <section id="our-values">
+        <div class="values-container">
+            <h2>Our Values</h2>
+            <p class="tagline">Learn, Play, Inspire.</p>
+            <p>At EduFun World, we don’t just educate—we ignite passion and curiosity that lasts a lifetime.</p>
+        </div>
+        <div class="fun-fact-container">
+            <h3>Fun Fact</h3>
+            <p>Did you know we started 3 years ago? Now, we're proud to host a diverse library of content for all our learners!</p>
+        </div>
+    </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const sections = document.querySelectorAll("section");
+        
+        const revealSection = () => {
+            sections.forEach((section) => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    section.classList.add("revealed");
+                }
+            });
+        };
+
+        // Initial check in case some sections are already in view
+        revealSection();
+
+        // Attach event listener for scroll
+        window.addEventListener("scroll", revealSection);
+    });
+</script>
+
+</body>
+</html>
