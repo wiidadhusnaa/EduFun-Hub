@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guess Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        :root {
+            --primary: #7269E3;
+            --background: #272C39;
+            --dark: #231934;
+            --accent: #246BFD;
+            --highlight: #F79193;
+        }
+
+        body {
+            background-color: var(--dark);
+        }
+
+        .navbar {
+            background-color: var(--background);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-btn div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary);
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        .menu-btn:hover div {
+            background-color: var(--highlight);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            background-color: var(--dark);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(114, 105, 227, 0.3);
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .auth-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transform: scale(1);
+        }
+
+        .login-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(36, 107, 253, 0.4);
+        }
+
+        .account-section {
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background-color: var(--background);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+
+        .game-frame {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: #D9EAFD;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            color: var(--highlight);
+            margin-bottom: 1rem;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+
+        .game-modes {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .mode-card {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            padding: 1rem;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 2px solid var(--dark);
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        #guess-frame {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        #guess {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid var(--primary);
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        #submit {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        #submit:hover {
+            transform: scale(1.05);
+        }
+
+        #feedback {
+            margin-top: 15px;
+            font-size: 1.2em;
+        }
+
+        #guesses {
+            color: #888;
+            margin-top: 10px;
+        }
+
+        #restart {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.3s;
+        }
+
+        #restart:hover {
+            transform: scale(1.05);
+        }
+
+        .loading-bar {
+            height: 3px;
+            background-color: var(--accent);
+            width: 0%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: width 0.3s;
+        }
+
+        .side-menu {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 60px;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .menu-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            padding: 5px 10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .menu-item:hover::after {
+            opacity: 1;
+            transform: translateX(10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+    
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuToggle">
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="logo.png" alt="Logo" class="logo">
+            <h1 style="color: white;">EduFun Hub</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search games...">
+        </div>
+        <div class="nav-right">
+            <button class="auth-btn login-btn">Log in</button>
+        </div>
+    </nav>
+
+    <div class="account-section">
+        <span>🎮 Create an account to save your high scores!</span>
+    </div>
+
+    <main class="main-content">
+        <div class="game-container">
+            <div class="game-frame">
+                <div id="guess-frame">
+                    <h2>Guess the Number</h2>
+                    <p>I'm thinking of a number between 1 and 100.</p>
+                    <input type="number" id="guess" placeholder="Enter your guess" />
+                    <button id="submit">Submit Guess</button>
+                    <div id="feedback">Start guessing!</div>
+                    <div id="guesses">Number of guesses: 0</div>
+                    <button id="restart" style="display: none;">Play Again</button>
+                </div>
+            </div>
+            
+            <div class="game-info">
+                <h2 class="game-title">Number Guessing</h2>
+                <div class="game-stats">
+                    <span>👁️ 250K Views</span>
+                    <span>⭐ 4.5/5 Rating</span>
+                    <span>🎮 Puzzle</span>
+                </div>
+                <p style="color: #ccc;">Test your guessing skills! Try to find the hidden number in the fewest attempts possible!</p>
+            </div>
+
+            <div class="game-modes">
+                <div class="mode-card" onclick="setDifficulty(50)">
+                    <h3>Easy Mode</h3>
+                    <p>Range: 1-50</p>
+                </div>
+                <div class="mode-card" onclick="setDifficulty(100)">
+                    <h3>Medium Mode</h3>
+                    <p>Range: 1-100</p>
+                </div>
+                <div class="mode-card" onclick="setDifficulty(200)">
+                    <h3>Hard Mode</h3>
+                    <p>Range: 1-200</p>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <div class="control-left">
+                    <button class="control-btn" id="likeBtn">
+                        👍 50K
+                    </button>
+                    <button class="control-btn" id="dislikeBtn">
+                        👎 5K
+                    </button>
+                    <button class="control-btn">
+                        ❤️ Favorite
+                    </button>
+                </div>
+                <div class="control-right">
+                    <button class="control-btn" onclick="resetGame()">
+                        🔄 New Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+       <script>
+        // Number Guessing Game Logic
+        let randomNumber = Math.floor(Math.random() * 100) + 1;
+        let guessCount = 0;
+        let likes = 50000;
+        let dislikes = 5000;
+        let maxNumber = 100;
+
+        const guessInput = document.getElementById("guess");
+        const submitButton = document.getElementById("submit");
+        const feedback = document.getElementById("feedback");
+        const guesses = document.getElementById("guesses");
+        const restartButton = document.getElementById("restart");
+        const loadingBar = document.querySelector('.loading-bar');
+
+        // Set game difficulty
+        function setDifficulty(max) {
+            maxNumber = max;
+            resetGame();
+        }
+
+        // Handle guess submission
+        function handleGuess() {
+            const userGuess = parseInt(guessInput.value);
+
+            // Validate input
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > maxNumber) {
+                feedback.textContent = `Please enter a valid number between 1 and ${maxNumber}!`;
+                return;
+            }
+
+            // Increment guess counter
+            guessCount++;
+            guesses.textContent = `Number of guesses: ${guessCount}`;
+
+            // Provide feedback
+            if (userGuess === randomNumber) {
+                feedback.textContent = "Correct! 🎉 You guessed the number!";
+                feedback.style.color = "#28a745";
+                endGame();
+            } else if (userGuess < randomNumber) {
+                feedback.textContent = "Too low! Try again.";
+                feedback.style.color = "#333";
+            } else {
+                feedback.textContent = "Too high! Try again.";
+                feedback.style.color = "#333";
+            }
+
+            guessInput.value = "";
+        }
+
+        // End game function
+        function endGame() {
+            guessInput.disabled = true;
+            submitButton.disabled = true;
+            restartButton.style.display = "inline-block";
+        }
+
+        // Reset game function
+        function resetGame() {
+            randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+        guessCount = 0;
+        guesses.textContent = "Number of guesses: 0";
+        feedback.textContent = "Start guessing!";
+        feedback.style.color = "#333";
+        
+        guessInput.disabled = false;
+        submitButton.disabled = false;
+        restartButton.style.display = "none";
+        
+        guessInput.value = "";
+    }
+
+    // Interface functionality
+    const menuBtn = document.querySelector('#menuToggle');
+    const sideMenu = document.querySelector('.side-menu');
+    
+    menuBtn.addEventListener('click', () => {
+        const currentWidth = sideMenu.style.width;
+        sideMenu.style.width = currentWidth === '200px' ? '60px' : '200px';
+        
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            if (currentWidth !== '200px') {
+                item.textContent += ' ' + item.getAttribute('data-tooltip');
+            } else {
+                item.textContent = item.textContent.split(' ')[0];
+            }
+        });
+    });
+
+    // Like/Dislike system
+    document.querySelector('#likeBtn').addEventListener('click', function() {
+        likes++;
+        this.innerHTML = `👍 ${Math.floor(likes/1000)}K`;
+        showAchievement('Thanks for your feedback! 👍');
+    });
+
+    document.querySelector('#dislikeBtn').addEventListener('click', function() {
+        dislikes++;
+        this.innerHTML = `👎 ${Math.floor(dislikes/1000)}K`;
+    });
+
+    // Achievement popup system
+    function showAchievement(message) {
+        const achievementPopup = document.createElement('div');
+        achievementPopup.style.position = 'fixed';
+        achievementPopup.style.bottom = '20px';
+        achievementPopup.style.right = '20px';
+        achievementPopup.style.background = 'var(--accent)';
+        achievementPopup.style.color = 'white';
+        achievementPopup.style.padding = '1rem';
+        achievementPopup.style.borderRadius = '10px';
+        achievementPopup.style.zIndex = '1000';
+        achievementPopup.textContent = message;
+
+        document.body.appendChild(achievementPopup);
+        setTimeout(() => achievementPopup.remove(), 3000);
+    }
+
+    // Loading bar animation
+    function updateLoadingBar() {
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 2;
+            loadingBar.style.width = `${progress}%`;
+            if (progress >= 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    loadingBar.style.width = '0%';
+                }, 200);
+            }
+        }, 20);
+    }
+
+    // Event listeners
+    submitButton.addEventListener('click', handleGuess);
+    restartButton.addEventListener('click', resetGame);
+
+    // Initialize game
+    updateLoadingBar();
+    showAchievement('🎮 Welcome to Number Guessing!');
+</script>
+</body>
+</html>

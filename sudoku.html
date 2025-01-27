@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        :root {
+            --primary: #7269E3;
+            --background: #272C39;
+            --dark: #231934;
+            --accent: #246BFD;
+            --highlight: #F79193;
+        }
+
+        body {
+            background-color: var(--dark);
+        }
+
+        .navbar {
+            background-color: var(--background);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-btn div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary);
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        .menu-btn:hover div {
+            background-color: var(--highlight);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            background-color: var(--dark);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .auth-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transform: scale(1);
+        }
+
+        .login-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .account-section {
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background-color: var(--background);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+
+        .game-frame {
+            width: 100%;
+            background-color: #f4f4f4;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            color: var(--highlight);
+            margin-bottom: 1rem;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+
+        .game-modes {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .mode-card {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            padding: 1rem;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 2px solid var(--dark);
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: var(--primary);
+        }
+
+        #sudoku {
+            display: grid;
+            grid-template-columns: repeat(9, 50px);
+            grid-template-rows: repeat(9, 50px);
+            gap: 2px;
+            margin: 20px auto;
+            background-color: white;
+            border: 2px solid var(--accent);
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border: 1px solid #ccc;
+            background-color: white;
+            transition: background-color 0.3s;
+        }
+
+        .cell:focus {
+            outline: none;
+            background-color: #e0f7fa;
+        }
+
+        #scoreboard {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .side-menu {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 60px;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .menu-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            padding: 5px 10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .menu-item:hover::after {
+            opacity: 1;
+            transform: translateX(10px);
+        }
+
+        #timer, #message {
+            color: var(--dark);
+            margin-top: 10px;
+            font-size: 20px;
+        }
+
+        .loading-bar {
+            height: 3px;
+            background-color: var(--accent);
+            width: 0%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: width 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            #sudoku {
+                grid-template-columns: repeat(9, 40px);
+                grid-template-rows: repeat(9, 40px);
+            }
+
+            .cell {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .side-menu {
+                width: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+    
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuToggle">
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="logo.png" alt="Logo" class="logo">
+            <h1 style="color: white;">EduFun Hub</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search games...">
+        </div>
+        <div class="nav-right">
+            <button class="auth-btn login-btn">Log in</button>
+        </div>
+    </nav>
+
+    <div class="account-section">
+        <span>🧩 Create an account to save your high scores!</span>
+    </div>
+
+    <main class="main-content">
+        <div class="game-container">
+            <div class="game-frame">
+                <div id="scoreboard">
+                    <p>Hints Used: <span id="hints-count">0/3</span></p>
+                    <p>Time: <span id="timer">0s</span></p>
+                </div>
+                <div id="sudoku"></div>
+                <div id="message"></div>
+            </div>
+            
+            <div class="game-info">
+                <h2 class="game-title">Sudoku Challenge</h2>
+                <div class="game-stats">
+                    <span>👁️ 300K Views</span>
+                    <span>⭐ 4.5/5 Rating</span>
+                    <span>🧩 Puzzle</span>
+                </div>
+                <p style="color: #ccc;">Test your logic skills! Fill the 9x9 grid so that each column, row, and 3x3 section contains all digits from 1-9.</p>
+            </div>
+
+            <div class="game-modes">
+                <div class="mode-card" onclick="setDifficulty('easy')">
+                    <h3>Easy</h3>
+                    <p>More pre-filled cells</p>
+                </div>
+                <div class="mode-card" onclick="setDifficulty('medium')">
+                    <h3>Medium</h3>
+                    <p>Balanced challenge</p>
+                </div>
+                <div class="mode-card" onclick="setDifficulty('hard')">
+                    <h3>Hard</h3>
+                    <p>Fewer pre-filled cells</p>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <div class="control-left">
+                    <button class="control-btn" id="hint-button">
+                        💡 Hint
+                    </button>
+                    <button class="control-btn" id="reset-button">
+                        🔄 Reset
+                    </button>
+ <button class="control-btn" id="likeBtn">
+                👍 50K
+            </button>
+            <button class="control-btn" id="dislikeBtn">
+                👎 5K
+            </button>
+            <button class="control-btn" id="favoriteBtn">
+                ❤️ Favorite
+            </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const sudokuGrid = document.getElementById('sudoku');
+        const hintButton = document.getElementById('hint-button');
+        const resetButton = document.getElementById('reset-button');
+        const timerDisplay = document.getElementById('timer');
+        const messageDisplay = document.getElementById('message');
+        const hintsCountDisplay = document.getElementById('hints-count');
+
+        let grid = [];
+        let timer;
+        let seconds = 0;
+        let hintsUsed = 0;
+        let currentDifficulty = 'medium';
+
+        // Sample Sudoku Puzzles for different difficulties
+        const puzzles = {
+            easy: [
+                [5, 3, 0, 0, 7, 0, 0, 0, 0],
+                [6, 0, 0, 1, 9, 5, 0, 0, 0],
+                [0, 9, 8, 0, 0, 0, 0, 6, 0],
+                [8, 0, 0, 0, 6, 0, 0, 0, 3],
+                [4, 0, 0, 8, 0, 3, 0, 0, 1],
+                [7, 0, 0, 0, 2, 0, 0, 0, 6],
+                [0, 6, 0, 0, 0, 0, 2, 8, 0],
+                [0, 0, 0, 4, 1, 9, 0, 0, 5],
+                [0, 0, 0, 0, 8, 0, 0, 7, 9]
+            ],
+            medium: [
+                [0, 3, 0, 0, 7, 0, 0, 0, 0],
+                [6, 0, 0, 1, 9, 5, 0, 0, 0],
+                [0, 9, 8, 0, 0, 0, 0, 6, 0],
+                [8, 0, 0, 0, 6, 0, 0, 0, 3],
+                [4, 0, 0, 8, 0, 3, 0, 0, 1],
+                [7, 0, 0, 0, 2, 0, 0, 0, 6],
+                [0, 6, 0, 0, 0, 0, 2, 8, 0],
+                [0, 0, 0, 4, 1, 9, 0, 0, 5],
+                [0, 0, 0, 0, 8, 0, 0, 7, 0]
+            ],
+              hard: [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 3, 0, 8, 5],
+                [0, 0, 1, 0, 2, 0, 0, 0, 0],
+                [0, 0, 0, 5, 0, 7, 0, 0, 0],
+                [0, 0, 4, 0, 0, 0, 1, 0, 0],
+                [0, 9, 0, 0, 0, 0, 0, 0, 0],
+                [5, 0, 0, 0, 0, 0, 0, 7, 3],
+                [0, 0, 2, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 4, 0, 0, 0, 9]
+            ]
+        };
+
+        // Difficulty selection
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            resetGame();
+        }
+
+        // Initialize the Sudoku grid
+        function initGrid() {
+            grid = JSON.parse(JSON.stringify(puzzles[currentDifficulty])); // Deep copy
+            sudokuGrid.innerHTML = '';
+            hintsUsed = 0;
+            hintsCountDisplay.textContent = `${hintsUsed}/3`;
+
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    const cell = document.createElement('input');
+                    cell.type = 'text';
+                    cell.maxLength = 1;
+                    cell.className = 'cell';
+                    cell.value = grid[row][col] !== 0 ? grid[row][col] : '';
+                    cell.disabled = grid[row][col] !== 0; // Disable pre-filled cells
+                    cell.addEventListener('input', (e) => {
+                        if (e.target.value < 1 || e.target.value > 9) {
+                            e.target.value = '';
+                        }
+                        checkWin();
+                    });
+                    sudokuGrid.appendChild(cell);
+                }
+            }
+            startTimer();
+        }
+
+        // Start the timer
+        function startTimer() {
+            seconds = 0;
+            clearInterval(timer);
+            timer = setInterval(() => {
+                seconds++;
+                timerDisplay.innerText = `${seconds}s`;
+            }, 1000);
+        }
+
+        // Check for win condition
+        function checkWin() {
+            const cells = document.querySelectorAll('.cell');
+            let isWin = true;
+            cells.forEach((cell, index) => {
+                const row = Math.floor(index / 9);
+                const col = index % 9;
+                if (grid[row][col] === 0 && cell.value === '') {
+                    isWin = false;
+                } else if (grid[row][col] !== 0 && cell.value != grid[row][col]) {
+                    isWin = false;
+                }
+            });
+            if (isWin) {
+                clearInterval(timer);
+                messageDisplay.innerHTML = `🎉 Congratulations! Solved in ${seconds} seconds!`;
+                triggerAchievement();
+            }
+        }
+
+        // Get a hint
+        function getHint() {
+            if (hintsUsed < 3) {
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        if (grid[row][col] === 0) {
+                            const cell = document.querySelector(`#sudoku input:nth-child(${row * 9 + col + 1})`);
+                            const puzzleValue = puzzles[currentDifficulty][row][col];
+                            cell.value = puzzleValue;
+                            cell.disabled = true;
+                            grid[row][col] = puzzleValue;
+                            hintsUsed++;
+                            hintsCountDisplay.textContent = `${hintsUsed}/3`;
+                            checkWin();
+                            return;
+                        }
+                    }
+                }
+            } else {
+                alert("No more hints available!");
+            }
+        }
+
+        // Reset the game
+        function resetGame() {
+            clearInterval(timer);
+            messageDisplay.innerHTML = '';
+            initGrid();
+        }
+
+ let likes = 50000;
+        let dislikes = 5000;
+        let isFavorite = false;
+
+        // Like system
+        document.querySelector('#likeBtn').addEventListener('click', function() {
+            likes++;
+            this.innerHTML = `👍 ${Math.floor(likes/1000)}K`;
+            showAchievement('Thanks for liking the game! 👍');
+        });
+
+        // Dislike system
+        document.querySelector('#dislikeBtn').addEventListener('click', function() {
+            dislikes++;
+            this.innerHTML = `👎 ${Math.floor(dislikes/1000)}K`;
+            showAchievement('Sorry you didn\'t enjoy the game. 👎');
+        });
+
+        // Favorite system
+        document.querySelector('#favoriteBtn').addEventListener('click', function() {
+            isFavorite = !isFavorite;
+            this.innerHTML = isFavorite ? '❤️ Unfavorite' : '❤️ Favorite';
+            showAchievement(isFavorite ? 'Added to favorites! ❤️' : 'Removed from favorites. 💔');
+        });
+
+        // Achievement popup (already defined in previous code)
+        function showAchievement(message) {
+            const achievementPopup = document.createElement('div');
+            achievementPopup.style.position = 'fixed';
+            achievementPopup.style.bottom = '20px';
+            achievementPopup.style.right = '20px';
+            achievementPopup.style.background = 'var(--accent)';
+            achievementPopup.style.color = 'white';
+            achievementPopup.style.padding = '1rem';
+            achievementPopup.style.borderRadius = '10px';
+            achievementPopup.style.zIndex = '1000';
+            achievementPopup.textContent = message;
+
+            document.body.appendChild(achievementPopup);
+            setTimeout(() => achievementPopup.remove(), 3000);
+        }
+        // Interface functionality
+        const menuBtn = document.querySelector('#menuToggle');
+        const sideMenu = document.querySelector('.side-menu');
+        
+        menuBtn.addEventListener('click', () => {
+            const currentWidth = sideMenu.style.width;
+            sideMenu.style.width = currentWidth === '200px' ? '60px' : '200px';
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                if (currentWidth !== '200px') {
+                    item.textContent += ' ' + item.getAttribute('data-tooltip');
+                } else {
+                    item.textContent = item.textContent.split(' ')[0];
+                }
+            });
+        });
+
+        // Loading bar animation
+        function updateLoadingBar() {
+            let progress = 0;
+            const loadingBar = document.querySelector('.loading-bar');
+            const interval = setInterval(() => {
+                progress += 2;
+                loadingBar.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingBar.style.width = '0%';
+                    }, 200);
+                }
+            }, 20);
+        }
+
+        // Event Listeners
+        hintButton.addEventListener('click', getHint);
+        resetButton.addEventListener('click', resetGame);
+
+        // Initialize game
+        initGrid();
+        updateLoadingBar();
+    </script>
+</body>
+</html>

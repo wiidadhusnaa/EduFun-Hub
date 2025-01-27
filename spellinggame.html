@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Management Spelling Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        :root {
+            --primary: #7269E3;
+            --background: #272C39;
+            --dark: #231934;
+            --accent: #246BFD;
+            --highlight: #F79193;
+        }
+
+        body {
+            background-color: var(--dark);
+        }
+
+        .navbar {
+            background-color: var(--background);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-btn div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary);
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        .menu-btn:hover div {
+            background-color: var(--highlight);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            background-color: var(--dark);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(114, 105, 227, 0.3);
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .auth-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transform: scale(1);
+        }
+
+        .login-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(36, 107, 253, 0.4);
+        }
+
+        .account-section {
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background-color: var(--background);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+
+        .game-frame {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: #CDC1FF;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            color: var(--highlight);
+            margin-bottom: 1rem;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+
+        .game-modes {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .mode-card {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            padding: 1rem;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 2px solid var(--dark);
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        #scoreboard {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        #user-input {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            margin-bottom: 10px;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            background-color: var(--dark);
+            color: white;
+        }
+
+        #user-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(114, 105, 227, 0.3);
+        }
+
+        #submit-btn {
+            padding: 10px 20px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(36, 107, 253, 0.4);
+        }
+
+        #feedback {
+            color: var(--highlight);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        #win-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 10;
+            text-align: center;
+        }
+
+        #win-message h2 {
+            margin: 0;
+            color: #4CAF50;
+            font-size: 28px;
+        }
+
+        #win-message p {
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        #win-message button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #win-message button:hover {
+            background-color: #45a049;
+        }
+
+        .side-menu {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 60px;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .menu-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            padding: 5px 10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .menu-item:hover::after {
+            opacity: 1;
+            transform: translateX(10px);
+        }
+
+        .loading-bar {
+            height: 3px;
+            background-color: var(--accent);
+            width: 0%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: width 0.3s;
+        }
+
+        #win-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 10;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .side-menu {
+                width: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+    
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuToggle">
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="logo.png" alt="Logo" class="logo">
+            <h1 style="color: white;">EduFun Hub</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search games...">
+        </div>
+        <div class="nav-right">
+            <button class="auth-btn login-btn">Log in</button>
+        </div>
+    </nav>
+
+    <div class="account-section">
+        <span>🎮 Create an account to save your high scores!</span>
+    </div>
+
+    <main class="main-content">
+        <div class="game-container">
+            <div class="game-frame">
+                <div id="scoreboard">
+                    <p>Score: <span id="score-value">0</span></p>
+                    <p>Lives: <span id="lives-count">3</span></p>
+                </div>
+                <div id="definition-display" style="color: white; text-align: center; margin-bottom: 20px; font-size: 1.2rem;"></div>
+                <input type="text" id="user-input" placeholder="Type your answer here">
+                <button id="submit-btn" onclick="submitAnswer()">Submit</button>
+                <p id="feedback"></p>
+            </div>
+            
+            <div class="game-info">
+                <h2 class="game-title">Spelling Challenge</h2>
+                <div class="game-stats">
+                    <span>👁️ 500K Views</span>
+                    <span>⭐ 4.7/5 Rating</span>
+                    <span>🎮 Spelling</span>
+                </div>
+                <p style="color: #ccc;">Test your spelling skills! Match the definition to the correct term. Guess right to score points!</p>
+            </div>
+
+            <div class="game-modes">
+                <div class="mode-card" onclick="setGameMode('easy')">
+                    <h3>Easy Mode</h3>
+                    <p>Fewer words</p>
+                </div>
+                <div class="mode-card" onclick="setGameMode('medium')">
+                    <h3>Medium Mode</h3>
+                    <p>More challenge</p>
+                </div>
+                <div class="mode-card" onclick="setGameMode('hard')">
+                    <h3>Hard Mode</h3>
+                    <p>Advanced terms</p>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <div class="control-left">
+                    <button class="control-btn" id="likeBtn">
+                        👍 128K
+                    </button>
+                    <button class="control-btn" id="dislikeBtn">
+                        👎 10K
+                    </button>
+                    <button class="control-btn">
+                        ❤️ Favorite
+                    </button>
+                </div>
+                <div class="control-right">
+                    <button class="control-btn" onclick="restartGame()">
+                        🔄 New Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="win-message">
+        <h2>🎉 Congratulations! 🎉</h2>
+        <p>Your Final Score: <span id="final-score"></span></p>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+    <script>
+// Word database with definitions
+const words = [
+    { word: "system management", definition: "The process of managing IT infrastructure and operations in an organization." },
+    { word: "library management", definition: "The administration and organization of library resources and services." },
+    { word: "project management", definition: "The application of knowledge, skills, tools, and techniques to project activities to meet project requirements." },
+    { word: "risk management", definition: "The process of identifying, assessing, and controlling threats to an organization's capital and earnings." },
+    { word: "change management", definition: "A structured approach to transitioning individuals, teams, and organizations from a current state to a desired future state." }
+];
+
+// Game state variables
+let currentWord = null;
+let score = 0;
+let lives = 3;
+let currentMode = 'medium';
+
+// DOM element references
+const definitionDisplay = document.getElementById('definition-display');
+const userInput = document.getElementById('user-input');
+const feedbackElement = document.getElementById('feedback');
+const scoreElement = document.getElementById('score-value');
+const livesElement = document.getElementById('lives-count');
+const winMessage = document.getElementById('win-message');
+const finalScoreElement = document.getElementById('final-score');
+
+// Function to start/reset the game
+function startGame() {
+    score = 0;
+    lives = 3;
+    updateScoreDisplay();
+    selectRandomWord();
+    userInput.value = '';
+    feedbackElement.textContent = '';
+    winMessage.style.display = 'none';
+}
+
+// Function to select a word based on current game mode
+function selectRandomWord() {
+    let filteredWords;
+    switch(currentMode) {
+        case 'easy':
+            filteredWords = words.slice(0, 2);
+            break;
+        case 'hard':
+            filteredWords = words.slice(3);
+            break;
+        default:
+            filteredWords = words.slice(1, 4);
+    }
+    currentWord = filteredWords[Math.floor(Math.random() * filteredWords.length)];
+    definitionDisplay.textContent = currentWord.definition;
+}
+
+// Function to submit user's answer
+function submitAnswer() {
+    const userAnswer = userInput.value.trim().toLowerCase();
+    const correctAnswer = currentWord.word.toLowerCase();
+
+    if (userAnswer === correctAnswer) {
+        // Correct answer
+        score += 10;
+        feedbackElement.textContent = '✅ Correct!';
+        feedbackElement.style.color = 'green';
+        updateScoreDisplay();
+        selectRandomWord();
+    } else {
+        // Incorrect answer
+        lives--;
+        feedbackElement.textContent = '❌ Wrong! Try again.';
+        feedbackElement.style.color = 'red';
+        updateLivesDisplay();
+    }
+
+    userInput.value = '';
+
+    // Check game over conditions
+    if (lives <= 0) {
+        endGame();
+    }
+}
+
+// Function to update score display
+function updateScoreDisplay() {
+    scoreElement.textContent = score;
+}
+
+// Function to update lives display
+function updateLivesDisplay() {
+    livesElement.textContent = lives;
+    if (lives <= 0) {
+        endGame();
+    }
+}
+
+// Function to end the game
+function endGame() {
+    winMessage.style.display = 'block';
+    finalScoreElement.textContent = score;
+}
+
+// Function to set game mode
+function setGameMode(mode) {
+    currentMode = mode;
+    startGame();
+}
+
+// Event listener for Enter key in input
+userInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        submitAnswer();
+    }
+});
+
+// Initialize the game
+startGame();
+
+// Side menu toggle functionality
+const menuToggle = document.getElementById('menuToggle');
+const sideMenu = document.querySelector('.side-menu');
+
+menuToggle.addEventListener('click', () => {
+    sideMenu.style.width = sideMenu.style.width === '250px' ? '60px' : '250px';
+});
+
+// Restart game function
+function restartGame() {
+    startGame();
+}
+
+// Loading bar animation
+window.addEventListener('load', () => {
+    const loadingBar = document.querySelector('.loading-bar');
+    loadingBar.style.width = '100%';
+    setTimeout(() => {
+        loadingBar.style.width = '0%';
+    }, 500);
+});
+ </script>
+</body>
+</html>
