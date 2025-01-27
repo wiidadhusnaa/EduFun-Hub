@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational 3D Quiz Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        :root {
+            --primary: #7269E3;
+            --background: #272C39;
+            --dark: #231934;
+            --accent: #246BFD;
+            --highlight: #F79193;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: white;
+        }
+
+        .navbar {
+            background-color: var(--background);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-btn div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary);
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        .menu-btn:hover div {
+            background-color: var(--highlight);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            background-color: var(--dark);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(114, 105, 227, 0.3);
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .auth-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transform: scale(1);
+        }
+
+        .login-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(36, 107, 253, 0.4);
+        }
+
+        .account-section {
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background-color: var(--background);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+
+        .game-frame {
+            width: 100%;
+            background-color: #f4f4f4;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            color: var(--highlight);
+            margin-bottom: 1rem;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+
+        .game-modes {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .mode-card {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            padding: 1rem;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 2px solid var(--dark);
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+#turn-indicator {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 15px; /* Smaller padding */
+    font-size: 1rem; /* Smaller font size */
+    border-radius: 8px;
+    margin-bottom: 1rem; /* Reduced margin */
+    text-align: center;
+}
+
+#quiz-panel {
+    background: linear-gradient(45deg, var(--primary), var(--accent));
+    color: white;
+    padding: 18px; /* Smaller padding */
+    border-radius: 12px;
+    width: 80%; /* Kept the width same */
+    max-width: 600px; /* Set max width to match the game size */
+    margin: 0 auto;
+    text-align: center;
+}
+
+#quiz-panel h1 {
+    font-size: 1.6rem; /* Smaller title font */
+    margin-bottom: 1rem; /* Reduced margin */
+}
+
+#quiz-panel button {
+    background: white;
+    color: var(--accent);
+    margin: 8px 0; /* Reduced margin */
+    padding: 8px 15px; /* Smaller padding */
+    font-size: 1rem; /* Smaller font for buttons */
+    transition: transform 0.3s;
+    border-radius: 8px;
+    width: 100%;
+}
+
+#quiz-panel button:hover {
+    transform: scale(1.05);
+}
+
+#leaderboard {
+    background: var(--background);
+    color: white;
+    padding: 15px 20px; /* Smaller padding */
+    border-radius: 12px;
+    margin-top: 1rem; /* Reduced margin */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Smaller shadow */
+    width: 80%; /* Set the width to match the game */
+    max-width: 600px; /* Same max-width as the game */
+    margin: 0 auto;
+    text-align: center;
+}
+
+#leaderboard h2 {
+    font-size: 1.6rem; /* Slightly smaller title font */
+    margin-bottom: 1rem; /* Reduced margin */
+    color: var(--accent);
+    font-weight: bold;
+}
+
+#leaderboard ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1rem; /* Smaller font size for leaderboard items */
+    line-height: 1.6; /* Reduced line height */
+}
+
+#leaderboard ul li {
+    margin: 6px 0; /* Reduced margin between items */
+    padding: 6px; /* Smaller padding */
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+#leaderboard ul li:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+#leaderboard ul li span {
+    font-weight: bold;
+    color: var(--primary); /* Accent color for player scores */
+}
+
+
+        .side-menu {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 60px;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .menu-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            padding: 5px 10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .menu-item:hover::after {
+            opacity: 1;
+            transform: translateX(10px);
+        }
+
+        .loading-bar {
+            height: 3px;
+            background-color: var(--accent);
+            width: 0%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+    
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuToggle">
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="logo.png" alt="Logo" class="logo">
+            <h1>EduFun Hub</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search games...">
+        </div>
+        <div class="nav-right">
+            <button class="auth-btn login-btn">Log in</button>
+        </div>
+    </nav>
+
+    <div class="account-section">
+        <span>🎮 Create an account to save your high scores!</span>
+    </div>
+
+    <main class="main-content">
+        <div class="game-container">
+            <div class="game-frame">
+                <div id="turn-indicator">Player 1's Turn</div>
+                <div id="quiz-panel">
+                    <h1 id="question">Question will appear here</h1>
+                    <button id="option1">Option 1</button>
+                    <button id="option2">Option 2</button>
+                    <button id="option3">Option 3</button>
+                    <button id="option4">Option 4</button>
+                </div>
+                
+                <div id="leaderboard">
+                    <h2>Leaderboard</h2>
+                    <ul id="leaderboard-list">
+                        <li>No scores yet!</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="game-info">
+                <h2 class="game-title">Educational Quiz</h2>
+                <div class="game-stats">
+                    <span>👁️ 500K Views</span>
+                    <span>⭐ 4.7/5 Rating</span>
+                    <span>🎮 Learning</span>
+                </div>
+                <p style="color: #ccc;">Test your knowledge! Answer questions to earn points and challenge your friend.</p>
+            </div>
+
+            <div class="game-modes">
+                <div class="mode-card">
+                    <h3>Easy Mode</h3>
+                    <p>6 Questions</p>
+                </div>
+                <div class="mode-card">
+                    <h3>Medium Mode</h3>
+                    <p>10 Questions</p>
+                </div>
+                <div class="mode-card">
+                    <h3>Hard Mode</h3>
+                    <p>15 Questions</p>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <div class="control-left">
+                    <button class="control-btn" id="likeBtn">
+                        👍 128K
+                    </button>
+                    <button class="control-btn" id="dislikeBtn">
+                        👎 10K
+                    </button>
+                    <button class="control-btn">
+                        ❤️ Favorite
+                    </button>
+                </div>
+                <div class="control-right">
+                    <button class="control-btn" onclick="resetGame()">
+                        🔄 New Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti"></script>
+
+    <script>
+        // Existing game script from mai.html remains the same
+        const questionEl = document.getElementById('question');
+        const options = [
+            document.getElementById('option1'),
+            document.getElementById('option2'),
+            document.getElementById('option3'),
+            document.getElementById('option4'),
+        ];
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const turnIndicator = document.getElementById('turn-indicator');
+        
+        const questions = [
+            { question: "What is the function of an operating system?", options: ["Run programs", "Control hardware", "Provide user interface", "All of the above"], answer: 3 },
+            { question: "Which is an example of system software?", options: ["Windows 10", "Microsoft Word", "Photoshop", "Candy Crush"], answer: 0 },
+            { question: "What does CPU stand for?", options: ["Central Processing Unit", "Central Program Utility", "Computer Performance Unit", "Control Processing Unit"], answer: 0 },
+            { question: "RAM stands for...", options: ["Random Access Memory", "Ready Access Memory", "Readable Access Module", "Rapid Access Mode"], answer: 0 },
+            { question: "Which protocol is used to send emails?", options: ["HTTP", "SMTP", "FTP", "POP"], answer: 1 },
+            { question: "What is the function of a firewall?", options: ["Delete viruses", "Prevent unauthorized access", "Store data", "Check passwords"], answer: 1 },
+            { question: "Which software is an example of an application software?", options: ["Google Chrome", "Linux", "BIOS", "Kernel"], answer: 0 },
+            { question: "Why is SSD faster than HDD?", options: ["No moving parts", "Larger capacity", "Cheaper price", "Uses more power"], answer: 0 },
+            { question: "The main function of a motherboard is...?", options: ["Store data", "Connect all computer components", "Process information", "Load the operating system"], answer: 1 },
+            { question: "What is an example of an input device?", options: ["Monitor", "Keyboard", "Printer", "Speaker"], answer: 1 },
+            { question: "The main function of a file system is...?", options: ["Manage files on storage", "Protect the computer from viruses", "Connect the computer to the internet", "Increase processing speed"], answer: 0 },
+            { question: "What is open-source software?", options: ["Software that is free to use", "Software with source code accessible and modifiable", "Trial software", "Software only for Linux"], answer: 1 },
+            { question: "The CPU is often referred to as...?", options: ["The brain of the computer", "The heart of the computer", "The backbone of the computer", "The blood of the computer"], answer: 0 },
+        { question: "What is the name of the cable for internet connection?", options: ["HDMI", "Ethernet", "USB", "VGA"], answer: 1 },
+        { question: "Which device stores data permanently?", options: ["RAM", "CPU", "SSD", "GPU"], answer: 2 },
+        { question: "What is the primary function of a GPU?", options: ["Process graphics", "Store files", "Protect the system", "Add RAM"], answer: 0 },
+        { question: "Which is NOT antivirus software?", options: ["McAfee", "Norton", "Kaspersky", "Chrome"], answer: 3 },
+        { question: "BIOS is...", options: ["An operating system", "Software to start the computer", "Text processing software", "Hardware device"], answer: 1 },
+        { question: "HTML is used to...?", options: ["Create websites", "Process data", "Run programs", "Store files"], answer: 0 },
+        { question: "What is an example of an image file format?", options: [".doc", ".jpg", ".exe", ".mp3"], answer: 1 },
+    ];
+        
+        let currentQuestion = 0;
+        let scores = [0, 0]; // Scores for Player 1 and Player 2
+        let currentPlayer = 0; // 0 for Player 1, 1 for Player 2
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            questionEl.textContent = q.question;
+            q.options.forEach((opt, idx) => {
+                options[idx].textContent = opt;
+                options[idx].onclick = () => checkAnswer(idx);
+            });
+        }
+
+        function checkAnswer(selected) {
+            // Check if the answer is correct
+            if (selected === questions[currentQuestion].answer) {
+                scores[currentPlayer] += 100; // Add 100 points for correct answer
+                alert(`Correct! Player ${currentPlayer + 1} Score: ${scores[currentPlayer]}`);
+            } else {
+                alert(`Wrong! Player ${currentPlayer + 1}'s turn is over.`);
+            }
+
+            // Update leaderboard live
+            updateLeaderboardLive();
+
+            // Move to the next question
+            currentQuestion++;
+            currentPlayer = (currentPlayer + 1) % 2; // Switch players
+
+            // Update turn indicator
+            turnIndicator.textContent = `Player ${currentPlayer + 1}'s Turn`;
+
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function updateLeaderboardLive() {
+            leaderboardList.innerHTML = `<li>Player 1 Score: ${scores[0]}</li><li>Player 2 Score: ${scores[1]}</li>`;
+        }
+
+        function endGame() {
+            alert(`Game Over! Final Scores:\nPlayer 1: ${scores[0]}\nPlayer 2: ${scores[1]}`);
+            if (scores[0] > scores[1]) {
+                alert('Player 1 wins!');
+                triggerConfetti();
+            } else if (scores[1] > scores[0]) {
+                alert('Player 2 wins!');
+                triggerConfetti();
+            } else {
+                alert('It\'s a tie!');
+            }
+            saveScore(scores);
+        }
+
+        function saveScore(finalScores) {
+            const scoresList = JSON.parse(localStorage.getItem('scores') || '[]');
+            scoresList.push(finalScores);
+            scoresList.sort((a, b) => b[0] - a[0]); // Sort by Player 1's score
+            localStorage.setItem('scores', JSON.stringify(scoresList));
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const scoresList = JSON.parse(localStorage.getItem('scores') || '[]');
+            leaderboardList.innerHTML = scoresList.length
+                ? scoresList.map((s, i) => `<li>#${i + 1}: Player 1: ${s[0]}, Player 2: ${s[1]}</li>`).join('')
+                : '<li>No scores yet!</li>';
+        }
+
+        // Side menu toggle functionality
+        const menuBtn = document.querySelector('#menuToggle');
+        const sideMenu = document.querySelector('.side-menu');
+        
+        menuBtn.addEventListener('click', () => {
+            const currentWidth = sideMenu.style.width;
+            sideMenu.style.width = currentWidth === '200px' ? '60px' : '200px';
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                if (currentWidth !== '200px') {
+                    item.textContent += ' ' + item.getAttribute('data-tooltip');
+                } else {
+                    item.textContent = item.textContent.split(' ')[0];
+                }
+            });
+        });
+
+        // Confetti effect
+        function triggerConfetti() {
+            const confettiCanvas = document.getElementById('confetti-canvas');
+            confettiCanvas.style.display = 'block';
+            const ctx = confettiCanvas.getContext('2d');
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+
+            let particles = [];
+            const particleCount = 100;
+            const gravity = 0.5;
+            const colors = ["#ff4d6e", "#ffbe0b", "#00bfae", "#ff5575"];
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    size: Math.random() * 5 + 5,
+                    speedX: Math.random() * 3 - 1.5,
+                    speedY: Math.random() * 3 + 3,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    opacity: Math.random() * 0.5 + 0.5
+                });
+            }
+
+            function updateParticles() {
+                ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+                particles.forEach(particle => {
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = particle.color;
+                    ctx.globalAlpha = particle.opacity;
+                    ctx.fill();
+
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+                    particle.speedY += gravity;
+
+                    if (particle.y > window.innerHeight) {
+                        particle.y = -10;
+                        particle.speedY = Math.random() * 3 + 3;
+                    }
+                });
+
+                requestAnimationFrame(updateParticles);
+            }
+
+            updateParticles();
+        }
+
+        // Loading bar animation
+        function updateLoadingBar() {
+            const loadingBar = document.querySelector('.loading-bar');
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                loadingBar.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingBar.style.width = '0%';
+                    }, 200);
+                }
+            }, 20);
+        }
+
+        // Initialize game
+        loadQuestion();
+        updateLoadingBar();
+    </script>
+</body>
+</html>

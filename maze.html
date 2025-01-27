@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Game Portal - Maze Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        :root {
+            --primary: #7269E3;
+            --background: #272C39;
+            --dark: #231934;
+            --accent: #246BFD;
+            --highlight: #F79193;
+        }
+
+        body {
+            background-color: var(--dark);
+        }
+
+        .navbar {
+            background-color: var(--background);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-btn div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary);
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        .menu-btn:hover div {
+            background-color: var(--highlight);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            background-color: var(--dark);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(114, 105, 227, 0.3);
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .auth-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transform: scale(1);
+        }
+
+        .login-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(36, 107, 253, 0.4);
+        }
+
+        .account-section {
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background-color: var(--background);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+
+        .game-frame {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #E8F9FF;
+            padding: 20px;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            color: var(--highlight);
+            margin-bottom: 1rem;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+
+        .game-modes {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .mode-card {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            padding: 1rem;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 2px solid var(--dark);
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 15px;
+        }
+
+        .loading-bar {
+            height: 3px;
+            background-color: var(--accent);
+            width: 0%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: width 0.3s;
+        }
+
+        .side-menu {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 60px;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .menu-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            padding: 5px 10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .menu-item:hover::after {
+            opacity: 1;
+            transform: translateX(10px);
+        }
+
+        #confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .side-menu {
+                width: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+    
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuToggle">
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="Logo.png" alt="Logo" class="logo">
+            <h1 style="color: white;">EduFun Hub</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search games...">
+        </div>
+        <div class="nav-right">
+            <button class="auth-btn login-btn">Log in</button>
+        </div>
+    </nav>
+
+    <div class="account-section">
+        <span>🎮 Create an account to save your high scores!</span>
+    </div>
+
+    <main class="main-content">
+        <div class="game-container">
+            <div class="game-frame">
+                <canvas id="mazeCanvas" width="500" height="500"></canvas>
+            </div>
+            
+            <div class="game-info">
+                <h2 class="game-title">Maze Challenge</h2>
+                <div class="game-stats">
+                    <span>👁️ 250K Views</span>
+                    <span>⭐ 4.5/5 Rating</span>
+                    <span>🎮 Puzzle</span>
+                </div>
+                <p style="color: #ccc;">Navigate through increasingly complex mazes! Find the green goal and challenge yourself!</p>
+            </div>
+
+            <div class="game-modes">
+                <div class="mode-card" onclick="setGameMode(7)">
+                    <h3>Easy Mode</h3>
+                    <p>7x7 Maze</p>
+                </div>
+                <div class="mode-card" onclick="setGameMode(9)">
+                    <h3>Medium Mode</h3>
+                    <p>9x9 Maze</p>
+                </div>
+                <div class="mode-card" onclick="setGameMode(11)">
+                    <h3>Hard Mode</h3>
+                    <p>11x11 Maze</p>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <div class="control-left">
+                    <button class="control-btn" id="likeBtn">
+                        👍 64K
+                    </button>
+                    <button class="control-btn" id="dislikeBtn">
+                        👎 5K
+                    </button>
+                    <button class="control-btn">
+                        ❤️ Favorite
+                    </button>
+                </div>
+                <div class="control-right">
+                    <button class="control-btn" onclick="resetGame()">
+                        🔄 New Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="confetti"></div>
+
+    <script>
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        const confettiContainer = document.getElementById('confetti');
+        const loadingBar = document.querySelector('.loading-bar');
+        let maze = [];
+        let tileSize;
+        let player = { x: 0, y: 0 };
+        let goal = { x: 0, y: 0 };
+        let gridSize = 7; // Initial grid size
+        let likes = 64000;
+        let dislikes = 5000;
+
+        function generateMaze(size) {
+            maze = Array.from({ length: size }, () =>
+                Array.from({ length: size }, () => 1)
+            );
+            const stack = [];
+            let x = 0, y = 0;
+
+            maze[y][x] = 0;
+            stack.push({ x, y });
+
+            while (stack.length > 0) {
+                const current = stack.pop();
+                const directions = [
+                    { dx: 0, dy: -2 },
+                    { dx: 0, dy: 2 },
+                    { dx: -2, dy: 0 },
+                    { dx: 2, dy: 0 },
+                ].sort(() => Math.random() - 0.5);
+
+                directions.forEach(({ dx, dy }) => {
+                    const nx = current.x + dx;
+                    const ny = current.y + dy;
+
+                    if (
+                        ny >= 0 && ny < size &&
+                        nx >= 0 && nx < size &&
+                        maze[ny][nx] === 1
+                    ) {
+                        maze[ny][nx] = 0;
+                        maze[current.y + dy / 2][current.x + dx / 2] = 0;
+                        stack.push({ x: nx, y: ny });
+                    }
+                });
+            }
+
+            player = { x: 0, y: 0 };
+            goal = { x: size - 1, y: size - 1 };
+        }
+
+        function drawMaze() {
+            tileSize = canvas.width / maze.length;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            maze.forEach((row, y) => {
+                row.forEach((cell, x) => {
+                    if (cell === 1) {
+                        ctx.fillStyle = '#444';
+                        ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                    }
+                });
+            });
+
+            drawPlayer();
+            drawGoal();
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = 'blue';
+            ctx.beginPath();
+            ctx.arc(
+                player.x * tileSize + tileSize / 2,
+                player.y * tileSize + tileSize / 2,
+                tileSize / 3,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+        }
+
+        function drawGoal() {
+            ctx.fillStyle = 'green';
+            ctx.fillRect(
+                goal.x * tileSize + tileSize / 4,
+                goal.y * tileSize + tileSize / 4,
+                tileSize / 2,
+                tileSize / 2
+            );
+        }
+
+        function movePlayer(dx, dy) {
+            const newX = player.x + dx;
+            const newY = player.y + dy;
+
+            if (maze[newY] && maze[newY][newX] === 0) {
+                player.x = newX;
+                player.y = newY;
+                if (player.x === goal.x && player.y === goal.y) {
+                    winGame();
+                }
+            } else {
+                loseAnimation();
+            }
+            drawMaze();
+        }
+
+        function winGame() {
+            createConfetti();
+            setTimeout(() => {
+                gridSize += 2; // Increase maze size for the next level
+                generateMaze(gridSize);
+                drawMaze();
+                showAchievement('🏆 Maze Completed!');
+            }, 100);
+        }
+
+        function loseAnimation() {
+            canvas.classList.add('shake');
+            setTimeout(() => canvas.classList.remove('shake'), 300);
+        }
+
+        function createConfetti() {
+            confettiContainer.innerHTML = '';
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.left = `${Math.random() * window.innerWidth}px`;
+                confetti.style.top = `${Math.random() * window.innerHeight}px`;
+                confetti.style.opacity = '1';
+                confetti.style.transition = 'top 2s ease, opacity 2s ease';
+                confettiContainer.appendChild(confetti);
+
+                setTimeout(() => {
+                    confetti.style.top = `${window.innerHeight + 50}px`;
+                    confetti.style.opacity = '0';
+                }, 10);
+                setTimeout(() => confetti.remove(), 2000);
+            }
+        }
+
+        // Game mode selection
+        function setGameMode(size) {
+            gridSize = size;
+            resetGame();
+        }
+
+        // Reset game function
+        function resetGame() {
+            generateMaze(gridSize);
+            drawMaze();
+            updateLoadingBar();
+        }
+
+        // Loading bar animation
+        function updateLoadingBar() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                loadingBar.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingBar.style.width = '0%';
+                    }, 200);
+                }
+            }, 20);
+        }
+
+        // Achievement popup system
+        function showAchievement(message) {
+            const achievementPopup = document.createElement('div');
+            achievementPopup.style.position = 'fixed';
+            achievementPopup.style.bottom = '20px';
+            achievementPopup.style.right = '20px';
+            achievementPopup.style.background = 'var(--accent)';
+            achievementPopup.style.color = 'white';
+            achievementPopup.style.padding = '1rem';
+            achievementPopup.style.borderRadius = '10px';
+            achievementPopup.style.zIndex = '1000';
+            achievementPopup.textContent = message;
+
+            document.body.appendChild(achievementPopup);
+            setTimeout(() => achievementPopup.remove(), 3000);
+        }
+
+        // Interface functionality
+        const menuBtn = document.querySelector('#menuToggle');
+        const sideMenu = document.querySelector('.side-menu');
+        
+        menuBtn.addEventListener('click', () => {
+            const currentWidth = sideMenu.style.width;
+            sideMenu.style.width = currentWidth === '200px' ? '60px' : '200px';
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                if (currentWidth !== '200px') {
+                    item.textContent += ' ' + item.getAttribute('data-tooltip');
+                } else {
+                    item.textContent = item.textContent.split(' ')[0];
+                }
+            });
+        });
+
+        // Like/Dislike system
+        document.querySelector('#likeBtn').addEventListener('click', function() {
+            likes++;
+            this.innerHTML = `👍 ${Math.floor(likes/1000)}K`;
+            showAchievement('Thanks for your feedback! 👍');
+        });
+
+        document.querySelector('#dislikeBtn').addEventListener('click', function() {
+            dislikes++;
+            this.innerHTML = `👎 ${Math.floor(dislikes/1000)}K`;
+        });
+
+        // Keyboard controls
+        window.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowUp':
+                    movePlayer(0, -1);
+                    break;
+                case 'ArrowDown':
+                    movePlayer(0, 1);
+                    break;
+                case 'ArrowLeft':
+                    movePlayer(-1, 0);
+                    break;
+                case 'ArrowRight':
+                    movePlayer(1, 0);
+                    break;
+            }
+        });
+
+        // Initialize game
+        generateMaze(gridSize);
+        drawMaze();
+        updateLoadingBar();
+        showAchievement('🎮 Welcome to Maze Challenge!');
+    </script>
+</body>
+</html>

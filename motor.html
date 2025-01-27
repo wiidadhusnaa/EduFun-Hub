@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor Race - 2 Players</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        :root {
+            --primary: #7269E3;
+            --background: #272C39;
+            --dark: #231934;
+            --accent: #246BFD;
+            --highlight: #F79193;
+        }
+
+        body {
+            background-color: var(--dark);
+        }
+
+        .navbar {
+            background-color: var(--background);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-btn div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary);
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        .menu-btn:hover div {
+            background-color: var(--highlight);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            background-color: var(--dark);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(114, 105, 227, 0.3);
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .auth-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transform: scale(1);
+        }
+
+        .login-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(36, 107, 253, 0.4);
+        }
+
+        .account-section {
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-container {
+            background-color: var(--background);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+
+        .game-frame {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: #333;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            color: var(--highlight);
+            margin-bottom: 1rem;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+
+        .game-modes {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .mode-card {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            padding: 1rem;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 2px solid var(--dark);
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        #game-area {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border: 2px solid var(--accent);
+            background: #333;
+            overflow: hidden;
+        }
+
+        .track {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            transform: translateY(-50%);
+        }
+
+        .car {
+            width: 200px; 
+            height: 120px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: absolute;
+        }
+
+        #timer {
+            color: var(--highlight);
+            font-size: 20px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+       #question-area {
+    background: var(--dark);
+    color: white;
+    padding: 1rem;
+    margin: 10px 0;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers horizontally */
+    justify-content: center; /* Centers vertically */
+    text-align: center; /* Ensures question text is centered */
+}
+
+#question {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.answer {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.answer:hover {
+    background-color: var(--primary);
+}
+
+        #status {
+            color: var(--highlight);
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .side-menu {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 60px;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .menu-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            padding: 5px 10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .menu-item:hover::after {
+            opacity: 1;
+            transform: translateX(10px);
+        }
+
+        .loading-bar {
+            height: 3px;
+            background-color: var(--accent);
+            width: 0%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+    
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuToggle">
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="logo.png" alt="Logo" class="logo">
+            <h1 style="color: white;">EduFun Hub</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search games...">
+        </div>
+        <div class="nav-right">
+            <button class="auth-btn login-btn">Log in</button>
+        </div>
+    </nav>
+
+    <div class="account-section">
+        <span>🏎️ Race your way to victory! Test your web development knowledge!</span>
+    </div>
+
+    <main class="main-content">
+<div class="game-container">
+    <div class="game-frame" id="game-area">
+        <div class="track">
+            <img src="motorgirl.png" id="player-car" style="position: absolute; left: 0; width: 50px; height: auto;" alt="Player 1 Car">
+            <img src="motorguy.png" id="opponent-car" style="position: absolute; left: 0; width: 50px; height: auto;" alt="Player 2 Car">
+        </div>
+        <div id="finish-line" style="position: absolute; top: 0; right: 10%; width: 10px; height: 100%; background-color: yellow;"></div>
+    </div>
+    
+    <div id="timer">Player 1's Time Left: 15</div>
+    <div id="status">Player 1's turn!</div>
+
+            <!-- All 16 questions from the original file -->
+            <div id="question-area">
+                <div id="question">What does HTML stand for?</div>
+                <button class="answer" data-correct="true">HyperText Markup Language</button>
+                <button class="answer" data-correct="false">Hyperlink Text Making Language</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which HTML tag is used to display an image?</div>
+                <button class="answer" data-correct="true">&lt;img&gt;</button>
+                <button class="answer" data-correct="false">&lt;image&gt;</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which CSS property is used to change the background color?</div>
+                <button class="answer" data-correct="true">background-color</button>
+                <button class="answer" data-correct="false">color</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">In JavaScript, how do you declare a variable?</div>
+                <button class="answer" data-correct="true">let</button>
+                <button class="answer" data-correct="false">var</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which method is used to add an event listener in JavaScript?</div>
+                <button class="answer" data-correct="true">addEventListener()</button>
+                <button class="answer" data-correct="false">onClick()</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which CSS property is used to change the text color?</div>
+                <button class="answer" data-correct="true">color</button>
+                <button class="answer" data-correct="false">background-color</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which HTML tag is used to define a paragraph?</div>
+                <button class="answer" data-correct="true">&lt;p&gt;</button>
+                <button class="answer" data-correct="false">&lt;div&gt;</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which JavaScript operator is used to compare both value and type?</div>
+                <button class="answer" data-correct="true">===</button>
+                <button class="answer" data-correct="false">==</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">How do you create a link in HTML?</div>
+                <button class="answer" data-correct="true">&lt;a&gt;</button>
+                <button class="answer" data-correct="false">&lt;link&gt;</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which element is used for a list with bullets in HTML?</div>
+                <button class="answer" data-correct="true">&lt;ul&gt;</button>
+                <button class="answer" data-correct="false">&lt;ol&gt;</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">How can you write a comment in CSS?</div>
+                <button class="answer" data-correct="true">/* comment */</button>
+                <button class="answer" data-correct="false">&lt;!-- comment --&gt;</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which tag is used to create a table row in HTML?</div>
+                <button class="answer" data-correct="true">&lt;tr&gt;</button>
+                <button class="answer" data-correct="false">&lt;td&gt;</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">How do you add an external CSS file in HTML?</div>
+                <button class="answer" data-correct="true">&lt;link rel="stylesheet" href="style.css"&gt;</button>
+                <button class="answer" data-correct="false">&lt;style src="style.css"&gt;</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">What does the 'float' property do in CSS?</div>
+                <button class="answer" data-correct="true">Wraps text around an element</button>
+                <button class="answer" data-correct="false">Aligns elements to the center</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which method is used to convert a string into an integer in JavaScript?</div>
+                <button class="answer" data-correct="true">parseInt()</button>
+                <button class="answer" data-correct="false">toString()</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">How do you create a form in HTML?</div>
+                <button class="answer" data-correct="true">&lt;form&gt;</button>
+                <button class="answer" data-correct="false">&lt;input&gt;</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">What does the 'id' attribute represent in HTML?</div>
+                <button class="answer" data-correct="true">A unique identifier for an element</button>
+                <button class="answer" data-correct="false">A class name of an element</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">Which CSS property is used to change the font size?</div>
+                <button class="answer" data-correct="true">font-size</button>
+                <button class="answer" data-correct="false">text-size</button>
+            </div>
+            
+            <div id="question-area">
+                <div id="question">What is the default value of the 'position' property in CSS?</div>
+                <button class="answer" data-correct="true">static</button>
+                <button class="answer" data-correct="false">relative</button>
+            </div>
+
+            <div class="game-info">
+                <h2 class="game-title">Web Dev Race</h2>
+                <div class="game-stats">
+                    <span>👁️ 250K Views</span>
+                    <span>⭐ 4.5/5 Rating</span>
+                    <span>🎮 Quiz Racing</span>
+                </div>
+                <p style="color: #ccc;">Race against time and your opponent! Answer web development questions to move forward!</p>
+            </div>
+
+            <div class="game-controls">
+                <div class="control-left">
+                    <button class="control-btn" id="likeBtn">
+                        👍 128K
+                    </button>
+                    <button class="control-btn" id="dislikeBtn">
+                        👎 10K
+                    </button>
+   		    <button class="control-btn">
+                        ❤️ Favorite
+                    </button>
+                </div>
+                <div class="control-right">
+                    <button class="control-btn" onclick="resetGame()">
+                        🔄 Restart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const questionAreas = document.querySelectorAll('#question-area');
+        const answers = document.querySelectorAll('.answer');
+        const playerCar = document.getElementById('player-car');
+        const opponentCar = document.getElementById('opponent-car');
+        const statusDiv = document.getElementById('status');
+        const timerDiv = document.getElementById('timer');
+        
+        let playerPosition = 0;
+        let opponentPosition = 0;
+        const finishLine = 800;
+        let currentPlayer = 1;
+        let currentQuestion = 0;
+        let timer = 15;
+        let timerInterval;
+        let likes = 128000;
+        let dislikes = 10000;
+
+        function startTurn() {
+            timer = 15;
+            timerDiv.textContent = `Player ${currentPlayer}'s Time Left: ${timer}`;
+            statusDiv.textContent = `Player ${currentPlayer}'s turn!`;
+    
+            timerInterval = setInterval(() => {
+                timer--;
+                timerDiv.textContent = `Player ${currentPlayer}'s Time Left: ${timer}`;
+    
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    switchTurn();
+                }
+            }, 1000);
+        }
+    
+        function moveCar(player) {
+            if (player === 1) {
+                playerPosition += 100;
+                playerCar.style.left = `${playerPosition}px`;
+            } else {
+                opponentPosition += 100;
+                opponentCar.style.left = `${opponentPosition}px`;
+            }
+        }
+    
+        function switchTurn() {
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            currentQuestion++;
+            if (currentQuestion < questionAreas.length) {
+                showQuestion(currentQuestion);
+            } else {
+                statusDiv.textContent = `Game Over!`;
+            }
+            startTurn();
+        }
+    
+        function showQuestion(index) {
+            questionAreas.forEach((area, i) => {
+                area.style.display = i === index ? 'block' : 'none';
+            });
+        }
+    
+        function checkAnswer(isCorrect) {
+            if (isCorrect) {
+                moveCar(currentPlayer);
+                if ((currentPlayer === 1 && playerPosition >= finishLine) || 
+                    (currentPlayer === 2 && opponentPosition >= finishLine)) {
+                    statusDiv.textContent = `Player ${currentPlayer} wins!`;
+                    clearInterval(timerInterval);
+                    return;
+                }
+            }
+            switchTurn();
+        }
+
+        function resetGame() {
+            playerPosition = 0;
+            opponentPosition = 0;
+            currentPlayer = 1;
+            currentQuestion = 0;
+            playerCar.style.left = '0px';
+            opponentCar.style.left = '0px';
+            statusDiv.textContent = `Player 1's turn!`;
+            showQuestion(currentQuestion);
+            startTurn();
+        }
+
+        // Like/Dislike system
+        document.querySelector('#likeBtn').addEventListener('click', function() {
+            likes++;
+            this.innerHTML = `👍 ${Math.floor(likes/1000)}K`;
+            showAchievement('Thanks for your race game feedback! 👍');
+        });
+
+        document.querySelector('#dislikeBtn').addEventListener('click', function() {
+            dislikes++;
+            this.innerHTML = `👎 ${Math.floor(dislikes/1000)}K`;
+            showAchievement('We appreciate your feedback! 👎');
+        });
+
+        // Achievement popup system
+        function showAchievement(message) {
+            const achievementPopup = document.createElement('div');
+            achievementPopup.style.position = 'fixed';
+            achievementPopup.style.bottom = '20px';
+            achievementPopup.style.right = '20px';
+            achievementPopup.style.background = 'var(--accent)';
+            achievementPopup.style.color = 'white';
+            achievementPopup.style.padding = '1rem';
+            achievementPopup.style.borderRadius = '10px';
+            achievementPopup.style.zIndex = '1000';
+            achievementPopup.textContent = message;
+
+            document.body.appendChild(achievementPopup);
+            setTimeout(() => achievementPopup.remove(), 3000);
+        }
+
+        // Loading bar animation
+        function updateLoadingBar() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                loadingBar.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingBar.style.width = '0%';
+                    }, 200);
+                }
+            }, 20);
+        }
+
+        // Side menu toggle
+        const menuBtn = document.querySelector('#menuToggle');
+        const sideMenu = document.querySelector('.side-menu');
+        const loadingBar = document.querySelector('.loading-bar');
+        
+        menuBtn.addEventListener('click', () => {
+            const currentWidth = sideMenu.style.width;
+            sideMenu.style.width = currentWidth === '200px' ? '60px' : '200px';
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                if (currentWidth !== '200px') {
+                    item.textContent += ' ' + item.getAttribute('data-tooltip');
+                } else {
+                    item.textContent = item.textContent.split(' ')[0];
+                }
+            });
+        });
+
+        // Event listeners for answers
+        answers.forEach(answer => {
+            answer.addEventListener('click', () => {
+                const isCorrect = answer.dataset.correct === 'true';
+                clearInterval(timerInterval); // Stop the timer immediately when an answer is selected
+                checkAnswer(isCorrect);
+            });
+        });
+
+        // Initialize game
+        showQuestion(currentQuestion);
+        startTurn();
+        updateLoadingBar();
+        showAchievement('🏎️ Welcome to Motor Race!');
+    </script>
+</body>
+</html>
